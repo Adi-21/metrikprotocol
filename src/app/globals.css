@@ -123,3 +123,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Animated Avalanche gradient border utility */
+@keyframes avalanche-gradient-rotate {
+  0% { --ag-angle: 0deg; }
+  100% { --ag-angle: 360deg; }
+}
+
+.ag-border {
+  position: relative;
+  border-radius: 1.5rem; /* match rounded-3xl */
+  background: transparent;
+}
+.ag-border::before {
+  content: "";
+  position: absolute; inset: 0;
+  padding: 2px; border-radius: inherit;
+  background: conic-gradient(from var(--ag-angle), #E84142, #ff6b6c, #E84142);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: avalanche-gradient-rotate 6s linear infinite;
+  opacity: .5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Animated gradient fill for buttons */
+@keyframes ag-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.ag-anim-btn {
+  background-image: linear-gradient(90deg, #E84142, #ff6b6c, #E84142);
+  background-size: 200% 100%;
+  animation: ag-shift 4s linear infinite;
+}

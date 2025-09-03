@@ -149,7 +149,7 @@ function NavList({ items, expanded = true }: { items: NavItem[]; expanded?: bool
                                 className={clsx(
                                     'group flex items-center rounded-md px-2 py-2 text-sm transition-colors overflow-hidden',
                                     'justify-start',
-                                    isActive ? 'bg-[#f58a32] text-white hover:bg-[#f58a32]' : 'hover:bg-gray-100'
+                                    isActive ? 'bg-[#E84142]/90 text-white hover:bg-[#E84142]' : 'hover:bg-gray-100'
                                 )}
                             >
                                 <span className={clsx("w-5 h-5 inline-flex items-center justify-center text-gray-700 mr-3 shrink-0", isActive && 'text-white')}>

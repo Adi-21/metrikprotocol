@@ -166,7 +166,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Header with curved bottom */}
       <div className="relative bg-white shadow-sm">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#ff5c00] to-orange-600 opacity-5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#E84142] to-rose-500 opacity-5"></div>
         <div className="relative px-4 py-4 md:px-8 md:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
@@ -206,7 +206,7 @@ export default function Home() {
                 <div className="text-center mb-10 md:mb-16">
                   <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
                     Transform Your Invoices Into
-                    <span className="text-[#ff5c00]"> Instant Liquidity</span>
+                    <span className="text-[#E84142]"> Instant Liquidity</span>
                   </h1>
                   <p className="text-base sm:text-lg lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                     Join the future of decentralized invoice financing. Get paid instantly, earn yield, or secure the network.
@@ -217,7 +217,7 @@ export default function Home() {
                 <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-100 max-w-4xl mx-auto">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-[#ff5c00] rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-[#E84142] rounded-2xl flex items-center justify-center">
                         <span className="text-white font-bold">M</span>
                       </div>
                       <div>
@@ -233,8 +233,8 @@ export default function Home() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-gradient-to-br from-[#ff5c00]/10 to-orange-100 rounded-2xl p-6">
-                      <div className="w-10 h-10 bg-[#ff5c00] rounded-xl mb-4"></div>
+                    <div className="bg-gradient-to-br from-[#E84142]/10 to-rose-100 rounded-2xl p-6">
+                      <div className="w-10 h-10 bg-[#E84142] rounded-xl mb-4"></div>
                       <div className="h-6 bg-gray-200 rounded mb-2"></div>
                       <div className="h-4 bg-gray-100 rounded w-2/3"></div>
                     </div>
@@ -253,7 +253,7 @@ export default function Home() {
                   <div className="bg-gray-50 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="h-5 bg-gray-200 rounded w-32"></div>
-                      <div className="w-8 h-8 bg-[#ff5c00] rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 bg-[#E84142] rounded-full flex items-center justify-center">
                         <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
@@ -270,19 +270,19 @@ export default function Home() {
                 {/* Stats */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 mt-10 md:mt-16 max-w-4xl mx-auto">
                   <div className="text-center">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">$2.4M+</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#E84142] mb-1 lg:mb-2">$2.4M+</div>
                     <div className="text-gray-600">Total Volume</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">24h</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#E84142] mb-1 lg:mb-2">24h</div>
                     <div className="text-gray-600">Avg. Funding</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">15.2%</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#E84142] mb-1 lg:mb-2">15.2%</div>
                     <div className="text-gray-600">LP APY</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">99.8%</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#E84142] mb-1 lg:mb-2">99.8%</div>
                     <div className="text-gray-600">Success Rate</div>
                   </div>
                 </div>
@@ -300,7 +300,7 @@ export default function Home() {
                 </button>
 
                 <div className="max-w-2xl mx-auto">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-[#ff5c00] to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 lg:mb-8">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-[#E84142] to-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6 lg:mb-8">
                     <img
                       src={`/${selectedRole === 'supplier' ? 'customer' : selectedRole}.png`}
                       alt={selectedRoleData.title}
@@ -311,7 +311,7 @@ export default function Home() {
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
                     Ready to connect as
                     <br />
-                    <span className="text-[#ff5c00]">{selectedRoleData.title}</span>?
+                    <span className="text-[#E84142]">{selectedRoleData.title}</span>?
                   </h1>
 
                   <p className="text-base sm:text-lg lg:text-2xl text-gray-600 mb-8 lg:mb-12 leading-relaxed">
@@ -358,56 +358,58 @@ export default function Home() {
                         className="w-full group relative overflow-hidden"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
-                        <div className="bg-white border-2 border-gray-100 group-hover:border-[#ff5c00] rounded-3xl p-6 transition-all duration-300 group-hover:shadow-lg">
-                          <div className="flex items-start space-x-4">
-                            {/* Role Image */}
-                            <div className="relative flex-shrink-0">
-                              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 group-hover:scale-110 transition-transform duration-300">
-                                <img
-                                  src={`/${roleImage}.png`}
-                                  alt={role.title}
-                                  className="w-full h-full object-cover"
-                                />
+                        <div className="ag-border">
+                          <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all duration-300 group-hover:shadow-lg">
+                            <div className="flex items-start space-x-4">
+                              {/* Role Image */}
+                              <div className="relative flex-shrink-0">
+                                <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 group-hover:scale-110 transition-transform duration-300">
+                                  <img
+                                    src={`/${roleImage}.png`}
+                                    alt={role.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                                {/* Selection Indicator */}
+                                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#E84142] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
                               </div>
-                              {/* Selection Indicator */}
-                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#ff5c00] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>
+
+                              {/* Content */}
+                              <div className="flex-1 text-left">
+                                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#E84142] transition-colors duration-300">
+                                  {role.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                                  {role.description}
+                                </p>
+
+                                {/* Features */}
+                                <div className="space-y-1">
+                                  {role.features.slice(0, 2).map((feature, idx) => (
+                                    <div key={idx} className="flex items-center text-xs text-gray-500">
+                                      <div className="w-1 h-1 bg-[#E84142] rounded-full mr-2"></div>
+                                      {feature}
+                                    </div>
+                                  ))}
+                                  {role.features.length > 2 && (
+                                    <div className="text-xs text-gray-400">
+                                      +{role.features.length - 2} more benefits
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
 
-                            {/* Content */}
-                            <div className="flex-1 text-left">
-                              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#ff5c00] transition-colors duration-300">
-                                {role.title}
-                              </h3>
-                              <p className="text-sm text-gray-600 mb-3 leading-relaxed">
-                                {role.description}
-                              </p>
-
-                              {/* Features */}
-                              <div className="space-y-1">
-                                {role.features.slice(0, 2).map((feature, idx) => (
-                                  <div key={idx} className="flex items-center text-xs text-gray-500">
-                                    <div className="w-1 h-1 bg-[#ff5c00] rounded-full mr-2"></div>
-                                    {feature}
-                                  </div>
-                                ))}
-                                {role.features.length > 2 && (
-                                  <div className="text-xs text-gray-400">
-                                    +{role.features.length - 2} more benefits
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Arrow */}
-                            <div className="flex-shrink-0 self-center">
-                              <div className="w-6 h-6 rounded-full bg-gray-100 group-hover:bg-[#ff5c00] flex items-center justify-center transition-all duration-300">
-                                <svg className="w-3 h-3 text-gray-400 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
+                              {/* Arrow */}
+                              <div className="flex-shrink-0 self-center">
+                                <div className="w-6 h-6 rounded-full bg-gray-100 group-hover:bg-[#E84142] flex items-center justify-center transition-all duration-300">
+                                  <svg className="w-3 h-3 text-gray-400 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -422,19 +424,19 @@ export default function Home() {
                   <div className="text-center">
                     <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 mb-3">
                       <div className="flex items-center space-x-1">
-                        <svg className="w-3 h-3 text-[#ff5c00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3 text-[#E84142]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         <span>Secure</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <svg className="w-3 h-3 text-[#ff5c00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3 text-[#E84142]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                         <span>Fast</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <svg className="w-3 h-3 text-[#ff5c00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3 text-[#E84142]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span>Trusted</span>
@@ -460,7 +462,7 @@ export default function Home() {
                 </div>
                 {/* Connection Header */}
                 <div className="mb-8">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[#ff5c00] to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#E84142] to-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
                     <img
                       src={`/${selectedRole === 'supplier' ? 'customer' : selectedRole}.png`}
                       alt={selectedRoleData.title}
@@ -482,7 +484,7 @@ export default function Home() {
                     <div className="space-y-3">
                       {selectedRoleData.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center">
-                          <div className="w-5 h-5 bg-[#ff5c00] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <div className="w-5 h-5 bg-[#E84142] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
@@ -498,7 +500,7 @@ export default function Home() {
                 <div className="mb-6">
                   <div className="relative group">
                     {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-[#ff5c00] to-orange-600 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#E84142] to-rose-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
 
                     {/* Custom Button */}
                     <button
@@ -508,7 +510,7 @@ export default function Home() {
                           hiddenButton.click();
                         }
                       }}
-                      className="relative w-full py-4 px-6 bg-gradient-to-r from-[#ff5c00] to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-3"
+                      className="relative w-full py-4 px-6 bg-gradient-to-r from-[#E84142] to-rose-500 hover:from-rose-600 hover:to-rose-700 text-white font-bold text-lg rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-3"
                     >
                       {/* Icon */}
                       <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
@@ -551,13 +553,13 @@ export default function Home() {
                 <div className="text-center">
                   <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
                     <div className="flex items-center space-x-1">
-                      <svg className="w-3 h-3 text-[#ff5c00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 text-[#E84142]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                       <span>256-bit SSL</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <svg className="w-3 h-3 text-[#ff5c00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 text-[#E84142]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span>Audited Contracts</span>
@@ -581,7 +583,7 @@ export default function Home() {
                           setIsRedirecting(true);
                           router.push('/dashboard/supplier');
                         }}
-                        className="w-full py-3 bg-[#ff5c00] text-white rounded-2xl font-semibold hover:bg-orange-600 transition-colors"
+                        className="w-full py-3 bg-[#E84142] text-white rounded-2xl font-semibold hover:bg-rose-600 transition-colors"
                       >
                         Enter Dashboard →
                       </button>

@@ -83,15 +83,6 @@ export default function SupplierDashboard() {
   const totalRepaid = borrowStats?.totalRepaid || 0;
   const stakingTier = currentTier || 0;
   const stakingTierName = ['None', 'Diamond', 'Gold', 'Silver', 'Bronze'][stakingTier] || 'Unknown';
-  
-  // Debug logging for staking and balances
-  console.log('🔍 Dashboard debug:', {
-    stakedAmount,
-    currentTier,
-    stakingTier,
-    address,
-    metrikBalance
-  });
 
   // Fetch real recent activity from blockchain events
   useEffect(() => {
@@ -190,19 +181,19 @@ export default function SupplierDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-[#f67205] to-[#f48124] via-[#f67205] rounded-lg p-6 text-white">
+      <div className="bg-gradient-to-r from-[#ffffff] to-[#ffffff] via-[#ffffff] shadow-lg rounded-lg p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user?.email?.address || 'Supplier'}!
+              <span className="text-[#E84142]">Welcome back, {user?.email?.address || 'Supplier'}</span>
             </h1>
-            <p className="text-blue-100">Manage your invoices, borrowing, and staking all in one place</p>
+            <p className="text-[#fa4a4a]">Manage your invoices, borrowing, and staking all in one place</p>
           </div>
           <div className="text-right">
-            <Badge variant="secondary" className="bg-white/20 text-white">
+            <Badge variant="secondary" className="bg-white/20 text-gray-600">
               {stakingTierName} Tier
             </Badge>
-            <p className="text-sm text-blue-100 mt-1">Address: {address?.slice(0, 6)}...{address?.slice(-4)}</p>
+            <p className="text-sm text-gray-600 mt-1">Address: {address?.slice(0, 6)}...{address?.slice(-4)}</p>
           </div>
         </div>
       </div>
@@ -250,7 +241,7 @@ export default function SupplierDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link href="/dashboard/supplier/staking">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-purple-200">
+          <Card className="hover:shadow-xl transition-all cursor-pointer border-0 bg-gradient-to-br from-purple-50 to-white hover:from-purple-100 hover:scale-[1.01]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Shield className="h-5 w-5 text-purple-600" />
@@ -268,7 +259,7 @@ export default function SupplierDashboard() {
         </Link>
 
         <Link href="/dashboard/supplier/invoice">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-green-200">
+          <Card className="hover:shadow-xl transition-all cursor-pointer border-0 bg-gradient-to-br from-emerald-50 to-white hover:from-emerald-100 hover:scale-[1.01]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileText className="h-5 w-5 text-green-600" />
@@ -291,7 +282,7 @@ export default function SupplierDashboard() {
         </Link>
 
         <Link href="/dashboard/supplier/borrow">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-200">
+          <Card className="hover:shadow-xl transition-all cursor-pointer border-0 bg-gradient-to-br from-sky-50 to-white hover:from-sky-100 hover:scale-[1.01]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <CreditCard className="h-5 w-5 text-blue-600" />
@@ -309,7 +300,7 @@ export default function SupplierDashboard() {
         </Link>
 
         <Link href="/dashboard/supplier/repay">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-emerald-200">
+          <Card className="hover:shadow-xl transition-all cursor-pointer border-0 bg-gradient-to-br from-rose-50 to-white hover:from-rose-100 hover:scale-[1.01]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <CheckCircle className="h-5 w-5 text-emerald-600" />
@@ -328,94 +319,139 @@ export default function SupplierDashboard() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">METRIK Balance</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-gray-50/50 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#E84142]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">METRIK Balance</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#E84142] to-rose-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <Zap className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-3xl font-bold bg-gradient-to-r from-[#E84142] to-rose-500 bg-clip-text text-transparent mb-2">
               {getFormattedBalance('metrik')} METRIK
             </div>
-            <p className="text-xs text-muted-foreground">
-              Available for staking
-            </p>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Available for staking</p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">USDC Balance</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-green-50/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">USDC Balance</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <DollarSign className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent mb-2">
               {getFormattedBalance('usdc')} USDC
             </div>
-            <p className="text-xs text-muted-foreground">
-              Available for repayment
-            </p>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Available for repayment</p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Outstanding Balance</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-orange-50/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Outstanding Balance</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <AlertTriangle className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent mb-2">
               ${(Number(repaymentStats.totalOutstanding) / 1e6).toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Amount to be repaid
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Verified Invoices</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {verifiedInvoices}
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Amount to be repaid</p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Out of {totalInvoices} total
-            </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Borrow Interest Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-blue-50/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Verified Invoices</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <CheckCircle className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="flex items-baseline space-x-2 mb-2">
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+                {verifiedInvoices}
+              </div>
+              <div className="text-sm text-gray-400">/ {totalInvoices}</div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Total invoices</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-purple-50/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Borrow Interest Rate</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
+          </CardHeader>
+          <CardContent className="relative">
+            <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent mb-2">
               8%
             </div>
-            <p className="text-xs text-muted-foreground">
-              Annual interest rate
-            </p>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Annual interest rate</p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Repaid</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+        <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-105 border-0 bg-gradient-to-br from-white to-teal-50/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Repaid</CardTitle>
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-400 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-500 bg-clip-text text-transparent mb-2">
               ${totalRepaid.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Historical repayments
-            </p>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-gray-500">Historical repayments</p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -430,31 +466,152 @@ export default function SupplierDashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
+          {/* Visual Overview Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Repayment Progress */}
+            {/* Portfolio Breakdown (Donut) */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Breakdown</CardTitle>
+                <CardDescription>Distribution of assets and positions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const metrik = Number((getFormattedBalance('metrik') || '0').toString().split(' ')[0]) || 0;
+                  const usdc = Number((getFormattedBalance('usdc') || '0').toString().split(' ')[0]) || 0;
+                  const staked = parseFloat(stakedAmount || '0') || 0;
+                  const total = Math.max(metrik + usdc + staked, 1);
+                  const pct = (val: number) => (val / total) * 100;
+                  // Donut segments
+                  const segments = [
+                    { color: '#E84142', value: pct(staked), label: 'Staked' },
+                    { color: '#22c55e', value: pct(usdc), label: 'USDC' },
+                    { color: '#6366f1', value: pct(metrik), label: 'METRIK' },
+                  ];
+                  // Build stroke-dasharray string
+                  let offset = 25; // start at 12 o'clock
+                  const radius = 60;
+                  const circumference = 2 * Math.PI * radius;
+                  const arcs = segments.map((s, i) => {
+                    const len = (s.value / 100) * circumference;
+                    const dash = `${len} ${circumference - len}`;
+                    const style = { strokeDasharray: dash, strokeDashoffset: offset, stroke: s.color } as React.CSSProperties;
+                    offset -= (s.value / 100) * circumference;
+                    return <circle key={i} r={radius} cx="80" cy="80" fill="transparent" strokeWidth="16" style={style} className="transition-all duration-500" />
+                  });
+                  return (
+                    <div className="flex items-center gap-6">
+                      <svg viewBox="0 0 160 160" className="w-40 h-40">
+                        <circle r={radius} cx="80" cy="80" fill="transparent" stroke="#f1f5f9" strokeWidth="16" />
+                        {arcs}
+                        <circle r={40} cx="80" cy="80" fill="#ffffff" />
+                        <text x="80" y="80" textAnchor="middle" dominantBaseline="middle" className="fill-gray-900 text-sm font-semibold">
+                          {(total).toLocaleString()}
+                        </text>
+                      </svg>
+                      <div className="grid grid-cols-3 gap-4 flex-1">
+                        {segments.map((s) => (
+                          <div key={s.label} className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
+                              <span className="text-sm font-medium">{s.label}</span>
+                            </div>
+                            <div className="text-xs text-muted-foreground">{s.value.toFixed(1)}%</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Borrow vs Repay Trend</CardTitle>
+                <CardDescription>Recent simulated on-chain activity</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  // Create a simple trend from available numbers (mock if missing)
+                  const baseBorrow = Number(totalBorrowed) || 0;
+                  const baseRepaid = Number(totalRepaid) || 0;
+                  const points = new Array(12).fill(0).map((_, i) => ({
+                    b: baseBorrow * (0.3 + (i + 1) / 20),
+                    r: baseRepaid * (0.2 + (12 - i) / 30)
+                  }));
+                  const maxY = Math.max(1, ...points.map(p => Math.max(p.b, p.r)));
+                  const scaleX = (i: number) => (i / 11) * 300 + 10;
+                  const scaleY = (v: number) => 120 - (v / maxY) * 110;
+                  const path = (key: 'b'|'r') => points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(p[key])}`).join(' ');
+                  return (
+                    <div className="w-full">
+                      <svg viewBox="0 0 320 140" className="w-full h-36">
+                        <defs>
+                          <linearGradient id="gradBorrow" x1="0" x2="1" y1="0" y2="0">
+                            <stop offset="0%" stopColor="#E84142" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#E84142" stopOpacity="0" />
+                          </linearGradient>
+                          <linearGradient id="gradRepay" x1="0" x2="1" y1="0" y2="0">
+                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        <path d={path('b')} fill="none" stroke="#E84142" strokeWidth="2" />
+                        <path d={`${path('b')} L 310 140 L 10 140 Z`} fill="url(#gradBorrow)" />
+                        <path d={path('r')} fill="none" stroke="#22c55e" strokeWidth="2" />
+                        <path d={`${path('r')} L 310 140 L 10 140 Z`} fill="url(#gradRepay)" />
+                      </svg>
+                      <div className="flex items-center gap-4 mt-2 text-sm">
+                        <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full" style={{background:'#E84142'}} /> Borrow</div>
+                        <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Repay</div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Repayment Progress</CardTitle>
                 <CardDescription>Your overall repayment status</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span>Repaid: ${totalRepaid.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-                    <span>Total: ${(totalBorrowed + totalRepaid).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-                  </div>
-                  <Progress 
-                    value={totalBorrowed + totalRepaid > 0 ? (totalRepaid / (totalBorrowed + totalRepaid)) * 100 : 0} 
-                    className="h-2"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {totalBorrowed + totalRepaid > 0 ? ((totalRepaid / (totalBorrowed + totalRepaid)) * 100).toFixed(1) : 0}% of total loans repaid
-                  </p>
-                </div>
+                {(() => {
+                  const percent = totalBorrowed + totalRepaid > 0 ? (totalRepaid / (totalBorrowed + totalRepaid)) * 100 : 0;
+                  const radius = 70;
+                  const circumference = 2 * Math.PI * radius;
+                  const dash = (percent / 100) * circumference;
+                  return (
+                    <div className="flex items-center gap-6">
+                      <svg viewBox="0 0 180 180" className="w-44 h-44">
+                        <circle cx="90" cy="90" r={radius} fill="none" stroke="#eef2f7" strokeWidth="16" />
+                        <circle
+                          cx="90"
+                          cy="90"
+                          r={radius}
+                          fill="none"
+                          stroke="#E84142"
+                          strokeWidth="16"
+                          strokeLinecap="round"
+                          strokeDasharray={`${dash} ${circumference - dash}`}
+                          style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dasharray 600ms ease' }}
+                        />
+                        <text x="90" y="80" textAnchor="middle" className="fill-gray-900 text-xl font-semibold">{percent.toFixed(0)}%</text>
+                        <text x="90" y="104" textAnchor="middle" className="fill-gray-500 text-xs">repaid</text>
+                      </svg>
+                      <div className="space-y-2">
+                        <div className="text-sm text-muted-foreground">Repaid</div>
+                        <div className="text-2xl font-semibold">${totalRepaid.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                        <div className="text-sm text-muted-foreground">Total</div>
+                        <div className="text-lg">${(totalBorrowed + totalRepaid).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                      </div>
+                    </div>
+                  )
+                })()}
               </CardContent>
             </Card>
-
-            {/* Staking Tier Table */}
             <Card>
               <CardHeader>
                 <CardTitle>Staking Tier System</CardTitle>
@@ -467,25 +624,36 @@ export default function SupplierDashboard() {
                       <TableRow>
                         <TableHead>Tier</TableHead>
                         <TableHead>Min Stake</TableHead>
+                        <TableHead className="hidden sm:table-cell">Benefits</TableHead>
+                        <TableHead className="w-[120px] text-right">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow className={stakingTier === 1 ? 'bg-purple-50' : ''}>
-                        <TableCell className="font-medium">Bronze</TableCell>
-                        <TableCell>1,000 METRIK</TableCell>
-                      </TableRow>
-                      <TableRow className={stakingTier === 2 ? 'bg-yellow-50' : ''}>
-                        <TableCell className="font-medium">Silver</TableCell>
-                        <TableCell>2,500 METRIK</TableCell>
-                      </TableRow>
-                      <TableRow className={stakingTier === 3 ? 'bg-orange-50' : ''}>
-                        <TableCell className="font-medium">Gold</TableCell>
-                        <TableCell>5,000 METRIK</TableCell>
-                      </TableRow>
-                      <TableRow className={stakingTier === 4 ? 'bg-indigo-50' : ''}>
-                        <TableCell className="font-medium">Diamond</TableCell>
-                        <TableCell>10,000 METRIK</TableCell>
-                      </TableRow>
+                      {[
+                        { name: 'Bronze', min: '1,000 METRIK', color: 'bg-amber-100 text-amber-800', key: 4 },
+                        { name: 'Silver', min: '2,500 METRIK', color: 'bg-zinc-100 text-zinc-700', key: 3 },
+                        { name: 'Gold', min: '5,000 METRIK', color: 'bg-yellow-100 text-yellow-800', key: 2 },
+                        { name: 'Diamond', min: '10,000 METRIK', color: 'bg-indigo-100 text-indigo-800', key: 1 },
+                      ].map((row) => (
+                        <TableRow key={row.key} className={stakingTier === row.key ? 'bg-rose-50/60' : ''}>
+                          <TableCell className="font-medium">{row.name}</TableCell>
+                          <TableCell>{row.min}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="outline" className="text-xs">Lower fees</Badge>
+                              <Badge variant="outline" className="text-xs">Higher points</Badge>
+                              <Badge variant="outline" className="text-xs">Priority verify</Badge>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {stakingTier === row.key ? (
+                              <Badge className="bg-[#E84142] text-white">Current</Badge>
+                            ) : (
+                              <Badge variant="secondary" className={row.color}>Locked</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -500,8 +668,6 @@ export default function SupplierDashboard() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* APY Rates Table */}
             <Card>
               <CardHeader>
                 <CardTitle>APY Rates by Duration</CardTitle>
@@ -514,32 +680,33 @@ export default function SupplierDashboard() {
                       <TableRow>
                         <TableHead>Duration</TableHead>
                         <TableHead>APY Rate</TableHead>
+                        <TableHead className="hidden md:table-cell">Visualization</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>45 days</TableCell>
-                        <TableCell>1% APY</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>90 days</TableCell>
-                        <TableCell>3% APY</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>180 days</TableCell>
-                        <TableCell>5% APY</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>365 days</TableCell>
-                        <TableCell>8% APY</TableCell>
-                      </TableRow>
+                      {[
+                        { d: '45 days', apy: 1 },
+                        { d: '90 days', apy: 3 },
+                        { d: '180 days', apy: 5 },
+                        { d: '365 days', apy: 8 },
+                      ].map((row) => (
+                        <TableRow key={row.d}>
+                          <TableCell className="font-medium">{row.d}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="border-[#E84142]/30 text-[#E84142]">{row.apy}% APY</Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <div className="relative h-2 w-full rounded-full bg-muted">
+                              <div className="absolute left-0 top-0 h-2 rounded-full bg-[#E84142]" style={{ width: `${row.apy * 10}%` }} />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Duration Multipliers Table */}
             <Card>
               <CardHeader>
                 <CardTitle>Duration Multipliers</CardTitle>
@@ -552,35 +719,26 @@ export default function SupplierDashboard() {
                       <TableRow>
                         <TableHead>Duration</TableHead>
                         <TableHead>Multiplier</TableHead>
-                        <TableHead>Points Formula</TableHead>
+                        <TableHead className="hidden md:table-cell">Points Formula</TableHead>
                         <TableHead>Example</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>45 days</TableCell>
-                        <TableCell>1.0x</TableCell>
-                        <TableCell>amount × 10 ÷ 10</TableCell>
-                        <TableCell>1000 METRIK = 1000 points</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>90 days</TableCell>
-                        <TableCell>1.3x</TableCell>
-                        <TableCell>amount × 13 ÷ 10</TableCell>
-                        <TableCell>1000 METRIK = 1300 points</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>180 days</TableCell>
-                        <TableCell>1.5x</TableCell>
-                        <TableCell>amount × 15 ÷ 10</TableCell>
-                        <TableCell>1000 METRIK = 1500 points</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>365 days</TableCell>
-                        <TableCell>2.0x</TableCell>
-                        <TableCell>amount × 20 ÷ 10</TableCell>
-                        <TableCell>1000 METRIK = 2000 points</TableCell>
-                      </TableRow>
+                      {[
+                        { d: '45 days', m: '1.0x', f: 'amount × 10 ÷ 10', e: '1000 METRIK = 1000 points' },
+                        { d: '90 days', m: '1.3x', f: 'amount × 13 ÷ 10', e: '1000 METRIK = 1300 points' },
+                        { d: '180 days', m: '1.5x', f: 'amount × 15 ÷ 10', e: '1000 METRIK = 1500 points' },
+                        { d: '365 days', m: '2.0x', f: 'amount × 20 ÷ 10', e: '1000 METRIK = 2000 points' },
+                      ].map((row) => (
+                        <TableRow key={row.d}>
+                          <TableCell className="font-medium">{row.d}</TableCell>
+                          <TableCell>
+                            <Badge className="bg-emerald-100 text-emerald-800" variant="secondary">{row.m}</Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-muted-foreground">{row.f}</TableCell>
+                          <TableCell>{row.e}</TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
