@@ -6,6 +6,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState, useEffect } from 'react';
 import { SupplierLoginButton } from '../components/borrow/SupplierLoginButton';
 import { usePrivy } from '@privy-io/react-auth';
+import Image from 'next/image';
 
 
 const roles = [
@@ -166,15 +167,17 @@ export default function Home() {
       {/* Header with curved bottom */}
       <div className="relative bg-white shadow-sm">
         <div className="absolute inset-0 bg-gradient-to-r from-[#ff5c00] to-orange-600 opacity-5"></div>
-        <div className="relative px-8 py-6">
-          <div className="flex items-center justify-between">
+        <div className="relative px-4 py-4 md:px-8 md:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-[#ff5c00] to-orange-600 rounded-2xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">M</span>
+              <div className="flex items-center justify-center">
+                <span className="font-bold text-xl">
+                  <Image className='w-12 h-12 rounded-2xl ' src="/metriklogo.png" alt="Metrik Logo" width={24} height={24} />
+                </span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Metrik Protocol</h1>
-                <p className="text-gray-600">Decentralized Invoice Financing</p>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Metrik Protocol</h1>
+                <p className="text-sm md:text-base text-gray-600">Decentralized Invoice Financing</p>
               </div>
             </div>
 
@@ -191,31 +194,27 @@ export default function Home() {
             )}
           </div>
         </div>
-        {/* Curved bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-50" style={{
-          clipPath: 'ellipse(100% 100% at 50% 0%)'
-        }}></div>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         {/* Left Side - Visual Story */}
-        <div className="flex-1 p-8">
+        <div className={`flex-1 p-4 lg:p-8 order-2 lg:order-1`}>
           <div className="max-w-4xl mx-auto h-full flex items-center">
             {showWelcome ? (
               <div className="w-full">
                 {/* Hero Section */}
-                <div className="text-center mb-16">
-                  <h1 className="text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <div className="text-center mb-10 md:mb-16">
+                  <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
                     Transform Your Invoices Into
                     <span className="text-[#ff5c00]"> Instant Liquidity</span>
                   </h1>
-                  <p className="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-base sm:text-lg lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                     Join the future of decentralized invoice financing. Get paid instantly, earn yield, or secure the network.
                   </p>
                 </div>
 
                 {/* Visual Dashboard Mockup */}
-                <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 max-w-4xl mx-auto">
+                <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-100 max-w-4xl mx-auto">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-[#ff5c00] rounded-2xl flex items-center justify-center">
@@ -233,7 +232,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div className="bg-gradient-to-br from-[#ff5c00]/10 to-orange-100 rounded-2xl p-6">
                       <div className="w-10 h-10 bg-[#ff5c00] rounded-xl mb-4"></div>
                       <div className="h-6 bg-gray-200 rounded mb-2"></div>
@@ -269,21 +268,21 @@ export default function Home() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 mt-10 md:mt-16 max-w-4xl mx-auto">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-[#ff5c00] mb-2">$2.4M+</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">$2.4M+</div>
                     <div className="text-gray-600">Total Volume</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-[#ff5c00] mb-2">24h</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">24h</div>
                     <div className="text-gray-600">Avg. Funding</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-[#ff5c00] mb-2">15.2%</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">15.2%</div>
                     <div className="text-gray-600">LP APY</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-[#ff5c00] mb-2">99.8%</div>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#ff5c00] mb-1 lg:mb-2">99.8%</div>
                     <div className="text-gray-600">Success Rate</div>
                   </div>
                 </div>
@@ -292,7 +291,7 @@ export default function Home() {
               <div className="w-full text-center">
                 <button
                   onClick={handleBackToRoleSelection}
-                  className="inline-flex items-center text-gray-500 hover:text-gray-700 mb-12 transition-colors"
+                  className="hidden lg:inline-flex items-center text-gray-500 hover:text-gray-700 mb-12 transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -301,30 +300,30 @@ export default function Home() {
                 </button>
 
                 <div className="max-w-2xl mx-auto">
-                  <div className="w-32 h-32 bg-gradient-to-br from-[#ff5c00] to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-[#ff5c00] to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 lg:mb-8">
                     <img
                       src={`/${selectedRole === 'supplier' ? 'customer' : selectedRole}.png`}
                       alt={selectedRoleData.title}
-                      className="w-20 h-20 object-contain"
+                      className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain"
                     />
                   </div>
 
-                  <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
                     Ready to connect as
                     <br />
                     <span className="text-[#ff5c00]">{selectedRoleData.title}</span>?
                   </h1>
 
-                  <p className="text-2xl text-gray-600 mb-12 leading-relaxed">
+                  <p className="text-base sm:text-lg lg:text-2xl text-gray-600 mb-8 lg:mb-12 leading-relaxed">
                     {selectedRoleData.description}
                   </p>
 
                   {/* Large Role Illustration */}
-                  <div className="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+                  <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-12 border border-gray-100">
                     <img
                       src={`/${selectedRole === 'supplier' ? 'customer' : selectedRole}.png`}
                       alt={selectedRoleData.title}
-                      className="w-full h-64 object-contain rounded-2xl"
+                      className="w-full h-40 sm:h-56 lg:h-64 object-contain rounded-2xl"
                     />
                   </div>
                 </div>
@@ -334,7 +333,7 @@ export default function Home() {
         </div>
 
         {/* Right Sidebar - Role Selection */}
-        <div className="w-96 bg-white flex-1 border-l border-gray-100 p-8">
+        <div className={`w-full lg:w-96 bg-white flex-1 lg:border-l border-gray-100 p-4 lg:p-8 order-1 lg:order-2`}>
           <div className="h-full flex flex-col">
             {showWelcome ? (
               <>
@@ -447,6 +446,18 @@ export default function Home() {
               </>
             ) : selectedRoleData && (
               <>
+                {/* Mobile back to roles */}
+                <div className="mb-4 lg:hidden">
+                  <button
+                    onClick={handleBackToRoleSelection}
+                    className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to role selection
+                  </button>
+                </div>
                 {/* Connection Header */}
                 <div className="mb-8">
                   <div className="w-20 h-20 bg-gradient-to-br from-[#ff5c00] to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
@@ -456,7 +467,7 @@ export default function Home() {
                       className="w-12 h-12 object-contain"
                     />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3 text-center">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 text-center">
                     Connect Wallet
                   </h2>
                   <p className="text-gray-600 text-center">
