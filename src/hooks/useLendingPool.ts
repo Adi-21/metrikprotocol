@@ -165,7 +165,6 @@ export function useLendingPool(addressOverride?: string) {
         functionName: 'getLPInterest',
         args: [(lpAddress || address || '0x0') as Address],
       });
-      console.log('getLPInterest raw value:', interest);
       const formattedInterest = formatAmount(interest as bigint, 6); // USDC has 6 decimals
       setLpInterest(formattedInterest);
       return formattedInterest;
@@ -372,11 +371,9 @@ export function useLendingPool(addressOverride?: string) {
 
   const getUserActiveLoans = useCallback(async (userAddress: Address) => {
     if (!publicClient || !lendingPoolContract.address || !lendingPoolContract.abi) {
-      console.log('getUserActiveLoans: Missing publicClient or contract details.');
       return [];
     }
     try {
-      console.log('getUserActiveLoans: Fetching active loans for', userAddress);
       
       // First check if user has any borrowed amount
       try {
@@ -386,30 +383,24 @@ export function useLendingPool(addressOverride?: string) {
           functionName: 'getUserTotalBorrowed',
           args: [userAddress as Address],
         }) as bigint;
-        console.log('getUserActiveLoans: Total borrowed amount:', totalBorrowed.toString());
         
         if (totalBorrowed === BigInt(0)) {
-          console.log('getUserActiveLoans: User has no borrowed amount, returning empty array');
           return [];
         }
       } catch (err) {
-        console.log('getUserActiveLoans: Error checking total borrowed amount:', err);
+        console.error('getUserActiveLoans: Error checking total borrowed amount:', err);
       }
       
       // First try getUserActiveLoans
       let loanIds: bigint[] = [];
       try {
-        console.log('getUserActiveLoans: Trying getUserActiveLoans function...');
         loanIds = await publicClient.readContract({
         address: lendingPoolContract.address,
         abi: lendingPoolContract.abi,
         functionName: 'getUserActiveLoans',
         args: [userAddress as Address],
       }) as bigint[];
-        console.log('getUserActiveLoans: Raw loan IDs from getUserActiveLoans:', loanIds);
       } catch (err) {
-        console.log('getUserActiveLoans: getUserActiveLoans failed, trying getUserLoans:', err);
-        // If getUserActiveLoans fails, try getUserLoans
         try {
           loanIds = await publicClient.readContract({
             address: lendingPoolContract.address,
@@ -417,9 +408,8 @@ export function useLendingPool(addressOverride?: string) {
             functionName: 'getUserLoans',
             args: [userAddress as Address],
           }) as bigint[];
-          console.log('getUserActiveLoans: Raw loan IDs from getUserLoans:', loanIds);
         } catch (err2) {
-          console.log('getUserActiveLoans: getUserLoans also failed:', err2);
+          console.error('getUserActiveLoans: getUserLoans also failed:', err2);
           // If both fail, return empty array
           loanIds = [];
         }
@@ -430,11 +420,9 @@ export function useLendingPool(addressOverride?: string) {
         .map(id => id.toString())
         .filter(id => id !== '' && id !== 'undefined');
       
-      console.log('getUserActiveLoans: Filtered valid loan IDs:', validLoanIds);
       
       // If no loans found from contract functions, try to find them manually
       if (validLoanIds.length === 0) {
-        console.log('getUserActiveLoans: No loans found from contract functions, trying manual search...');
         
         // Try common invoice IDs that might have loans
         const possibleInvoiceIds = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
@@ -453,15 +441,13 @@ export function useLendingPool(addressOverride?: string) {
                 loanDetails[0] && loanDetails[0] > BigInt(0) && // has amount
                 !loanDetails[2] && // not repaid
                 !loanDetails[3]) { // not liquidated
-              console.log('getUserActiveLoans: Found active loan for invoice ID:', invoiceId, loanDetails);
               validLoanIds.push(invoiceId);
             }
           } catch (err) {
             // Ignore errors for non-existent loans
           }
         }
-        
-        console.log('getUserActiveLoans: After manual search, found loans:', validLoanIds);
+      
       }
       
       return validLoanIds;
@@ -473,22 +459,15 @@ export function useLendingPool(addressOverride?: string) {
 
   const getUserLoanDetails = useCallback(async (userAddress: Address, tokenId: string) => {
     if (!publicClient || !lendingPoolContract.address || !lendingPoolContract.abi) {
-      console.log('getUserLoanDetails: Missing publicClient or contract details.');
       return null;
     }
     try {
-      console.log('getUserLoanDetails: Fetching details for user', userAddress, 'and token', tokenId);
       const details = await publicClient.readContract({
         address: lendingPoolContract.address,
         abi: lendingPoolContract.abi,
         functionName: 'getUserLoanDetails',
         args: [userAddress as Address, BigInt(tokenId)],
       }) as any;
-
-      console.log('getUserLoanDetails: Raw details from contract:', details);
-      console.log('getUserLoanDetails: Raw amount:', details[0] ? details[0].toString() : 'undefined');
-      console.log('getUserLoanDetails: Raw interestAccrued:', details[4] ? details[4].toString() : 'undefined');
-      console.log('getUserLoanDetails: Raw dueDate:', details[1] ? details[1].toString() : 'undefined');
 
       // Add a check for essential properties by index before formatting
       if (!details || typeof details[0] === 'undefined' || typeof details[4] === 'undefined' || typeof details[1] === 'undefined') {
@@ -555,8 +534,6 @@ export function useLendingPool(addressOverride?: string) {
       const currentTime = Math.floor(Date.now() / 1000);
       const dueDateTimestamp = Math.floor(loanDetails.dueDate.getTime() / 1000);
       const isOverdue = currentTime > dueDateTimestamp;
-      
-      console.log('Repay check - Current time:', currentTime, 'Due date:', dueDateTimestamp, 'Is overdue:', isOverdue);
       
       // Note: Early repayment should be allowed, so we don't block non-overdue loans
 
@@ -633,8 +610,6 @@ export function useLendingPool(addressOverride?: string) {
       let errorMessage = 'Repayment failed. Please try again.';
       
       if (err.message?.includes('0xe450d38c')) {
-        // This error signature could mean several things, let's check common causes
-        console.log('Repay error 0xe450d38c detected. Checking possible causes...');
         // Check USDC balance
         try {
           if (!publicClient) {
@@ -655,7 +630,6 @@ export function useLendingPool(addressOverride?: string) {
                 functionName: 'balanceOf',
                 args: [address as Address],
               }) as bigint;
-              console.log('Current USDC balance:', usdcBalance.toString());
               if (usdcBalance < amountDue) {
                 errorMessage = `Insufficient USDC balance. You need ${formatAmount(amountDue, 6)} but have ${formatAmount(usdcBalance, 6)}.`;
               } else {

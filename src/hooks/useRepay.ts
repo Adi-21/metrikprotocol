@@ -73,21 +73,16 @@ export function useRepay(addressOverride?: string) {
       setIsLoading(true);
       setError(null);
 
-      console.log('🔍 Fetching outstanding loans for address:', address);
-
       // Get user's active loan IDs
       let loanIds: bigint[] = [];
       try {
-        console.log('🔍 Trying getUserActiveLoans function...');
         loanIds = await publicClient.readContract({
           address: lendingPoolContract.address,
           abi: lendingPoolContract.abi,
           functionName: 'getUserActiveLoans',
           args: [address],
         }) as bigint[];
-        console.log('🔍 Raw loan IDs from getUserActiveLoans:', loanIds);
       } catch (err) {
-        console.log('🔍 getUserActiveLoans failed, trying getUserLoans:', err);
         // If getUserActiveLoans fails, try getUserLoans
         try {
           loanIds = await publicClient.readContract({
@@ -96,9 +91,7 @@ export function useRepay(addressOverride?: string) {
             functionName: 'getUserLoans',
             args: [address],
           }) as bigint[];
-          console.log('🔍 Raw loan IDs from getUserLoans:', loanIds);
         } catch (err2) {
-          console.log('🔍 getUserLoans also failed:', err2);
           loanIds = [];
         }
       }
@@ -107,12 +100,10 @@ export function useRepay(addressOverride?: string) {
       const validLoanIds = loanIds
         .map(id => id.toString())
         .filter(id => id !== '' && id !== 'undefined');
-      
-      console.log('🔍 Valid loan IDs:', validLoanIds);
+    
 
       // If no loans found from contract functions, try manual search
       if (validLoanIds.length === 0) {
-        console.log('🔍 No loans found from contract functions, trying manual search...');
         
         // Try common invoice IDs that might have loans
         const possibleInvoiceIds = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
@@ -131,15 +122,13 @@ export function useRepay(addressOverride?: string) {
                 loanDetails[0] && loanDetails[0] > BigInt(0) && // has amount
                 !loanDetails[2] && // not repaid
                 !loanDetails[3]) { // not liquidated
-              console.log('🔍 Found active loan for invoice ID:', invoiceId, loanDetails);
               validLoanIds.push(invoiceId);
             }
           } catch (err) {
             // Ignore errors for non-existent loans
           }
         }
-        
-        console.log('🔍 After manual search, found loans:', validLoanIds);
+      
       }
 
       // Fetch details for each loan
@@ -192,8 +181,6 @@ export function useRepay(addressOverride?: string) {
           console.error('Error fetching loan details for ID:', loanId, err);
         }
       }
-
-      console.log('🔍 Final loans found:', loans);
       setOutstandingLoans(loans);
 
       // Update stats

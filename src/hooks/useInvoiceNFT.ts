@@ -73,7 +73,6 @@ export interface InvoiceDetails {
 }
 
 export function useInvoiceNFT(address?: Address) {
-  console.log('useInvoiceNFT hook called with address:', address);
   const { contract: invoiceNFTContract } = useContract('invoiceNFT');
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
@@ -93,12 +92,6 @@ export function useInvoiceNFT(address?: Address) {
   const [error, setError] = useState<Error | null>(null);
 
   const fetchInvoices = useCallback(async (userAddress: Address) => {
-    console.log('useInvoiceNFT fetchInvoices debug:', {
-      readClient,
-      contractAddress: invoiceNFTContract.address,
-      abi: invoiceNFTContract.abi,
-      userAddress
-    });
     if (!readClient || !invoiceNFTContract.address || !invoiceNFTContract.abi || !userAddress) {
       setInvoices([]);
       setError(new Error('Fetch invoices: missing address or contract.'));
@@ -114,27 +107,22 @@ export function useInvoiceNFT(address?: Address) {
           functionName: 'totalSupply',
         }) as bigint;
       } catch (err) {
-        console.log('totalSupply function not available, using 0');
         totalSupply = 0n;
       }
-      console.log('useInvoiceNFT: totalSupply result:', totalSupply);
       
       // Try to fetch more tokens than totalSupply to catch any gaps
       const maxTokensToCheck = Math.max(Number(totalSupply) + 5, 20); // Check extra tokens
-      console.log('useInvoiceNFT: Checking up to', maxTokensToCheck, 'tokens');
       
       const invoicesArr = [];
       
       // Also try to directly check for token 6 (your invoice)
       try {
-        console.log('useInvoiceNFT: Directly checking token 6...');
         const directToken6 = await readClient.readContract({
           address: invoiceNFTContract.address,
           abi: invoiceNFTContract.abi,
           functionName: 'getInvoiceDetails',
           args: [BigInt(6)],
         }) as RawInvoice;
-        console.log('useInvoiceNFT: Direct token 6 result:', directToken6);
         
         // If token 6 exists, add it to the invoices array
         if (directToken6 && directToken6.supplier) {
@@ -148,27 +136,23 @@ export function useInvoiceNFT(address?: Address) {
             ipfsHash: directToken6.ipfsHash,
             isVerified: directToken6.isVerified
           });
-          console.log('useInvoiceNFT: Added token 6 to invoices array');
         } else {
-          console.log('useInvoiceNFT: Token 6 exists but has no supplier or is empty');
+          return;
         }
       } catch (err) {
-        console.log('useInvoiceNFT: Token 6 not found or error:', err);
-        console.log('useInvoiceNFT: Error details:', err);
+        return;
       }
       
       // Also try to check if token 6 exists using _exists function
       try {
-        console.log('useInvoiceNFT: Checking if token 6 exists...');
         const tokenExists = await readClient.readContract({
           address: invoiceNFTContract.address,
           abi: invoiceNFTContract.abi,
           functionName: '_exists',
           args: [BigInt(6)],
         });
-        console.log('useInvoiceNFT: Token 6 exists check result:', tokenExists);
       } catch (err) {
-        console.log('useInvoiceNFT: _exists function not available or error:', err);
+        return;
       }
       const foundTokenIds = new Set<string>();
       
@@ -180,11 +164,9 @@ export function useInvoiceNFT(address?: Address) {
           functionName: 'tokenByIndex',
             args: [BigInt(i)],
           });
-          console.log(`useInvoiceNFT: tokenByIndex(${i}) result:`, tokenId);
           
           // Skip if we already processed this tokenId
           if (foundTokenIds.has((tokenId as bigint).toString())) {
-            console.log(`useInvoiceNFT: Skipping duplicate tokenId ${tokenId}`);
             continue;
           }
           foundTokenIds.add((tokenId as bigint).toString());
@@ -195,7 +177,6 @@ export function useInvoiceNFT(address?: Address) {
           functionName: 'getInvoiceDetails',
           args: [tokenId],
           }) as RawInvoice;
-          console.log(`useInvoiceNFT: getInvoice(${tokenId}) result:`, invoice);
           invoicesArr.push({ 
             id: (tokenId as bigint).toString(), 
             invoiceId: invoice.invoiceId,
@@ -210,7 +191,6 @@ export function useInvoiceNFT(address?: Address) {
           console.error(`useInvoiceNFT: Error fetching token/index ${i}:`, err);
           // If we get an ERC721OutOfBoundsIndex error, we've reached the end
           if (err instanceof Error && err.message.includes('ERC721OutOfBoundsIndex')) {
-            console.log(`useInvoiceNFT: Reached end of tokens at index ${i}`);
             break;
           }
           // For other errors, continue but don't break the loop
@@ -227,12 +207,6 @@ export function useInvoiceNFT(address?: Address) {
   }, [readClient, invoiceNFTContract.address, invoiceNFTContract.abi]);
 
   const fetchUserInvoices = useCallback(async (userAddress: Address) => {
-    console.log('useInvoiceNFT fetchUserInvoices debug:', {
-      readClient,
-      contractAddress: invoiceNFTContract.address,
-      abi: invoiceNFTContract.abi,
-      userAddress
-    });
     if (!readClient || !invoiceNFTContract.address || !invoiceNFTContract.abi) {
       setUserInvoices([]);
       setError(new Error('Fetch user invoices: missing address or contract.'));
@@ -242,12 +216,6 @@ export function useInvoiceNFT(address?: Address) {
     try {
       setIsLoading(true);
       setError(null);
-
-      console.log('🔍 Fetching InvoiceMinted events for user:', userAddress);
-      console.log('🔍 Contract address:', invoiceNFTContract.address);
-
-      // Get InvoiceMinted events for the current user
-      console.log('🔍 Fetching InvoiceMinted events with supplier filter:', userAddress);
       const logs = await readClient.getLogs({
         address: invoiceNFTContract.address,
         event: {
@@ -265,20 +233,7 @@ export function useInvoiceNFT(address?: Address) {
         fromBlock: 'earliest',
         toBlock: 'latest'
       });
-
-      console.log('🔍 InvoiceMinted events found:', logs.length);
-      console.log('🔍 Raw event logs:', logs);
-      
-      // Log each event in detail
-      logs.forEach((log, index) => {
-        console.log(`🔍 Event ${index + 1}:`, {
-          tokenId: log.args.tokenId?.toString(),
-          supplier: log.args.supplier,
-          invoiceId: log.args.invoiceId,
-          blockNumber: log.blockNumber,
-          transactionHash: log.transactionHash
-        });
-      });
+    
 
       const userInvoicePromises = [];
 
@@ -286,10 +241,8 @@ export function useInvoiceNFT(address?: Address) {
       for (const log of logs) {
         try {
           const tokenId = log.args.tokenId;
-          console.log('🔍 Processing tokenId:', tokenId);
 
           if (!tokenId) {
-            console.log('🔍 Skipping log with undefined tokenId');
             continue;
           }
 
@@ -300,8 +253,6 @@ export function useInvoiceNFT(address?: Address) {
             functionName: 'getInvoiceDetails',
             args: [tokenId],
           }) as RawInvoice;
-
-          console.log('🔍 Invoice details for tokenId', tokenId, ':', invoiceDetails);
 
           if (invoiceDetails) {
             userInvoicePromises.push({
@@ -319,13 +270,9 @@ export function useInvoiceNFT(address?: Address) {
           console.error('Error processing invoice for tokenId:', log.args.tokenId, err);
         }
       }
-
-      console.log('🔍 User invoices processed:', userInvoicePromises.length);
-      console.log('🔍 User invoices details:', userInvoicePromises);
       
       // Direct check for the user's invoice that we know exists
       try {
-        console.log('🔍 Direct check for user invoice - trying tokenId 7');
         const directInvoice = await readClient.readContract({
           address: invoiceNFTContract.address,
           abi: invoiceNFTContract.abi,
@@ -333,14 +280,11 @@ export function useInvoiceNFT(address?: Address) {
           args: [BigInt(7)],
         }) as RawInvoice;
         
-        console.log('🔍 Direct invoice check result:', directInvoice);
         
         if (directInvoice && directInvoice.supplier === userAddress) {
-          console.log('🔍 Found user invoice via direct check!');
           // Add to userInvoices if not already there
           const existingInvoice = userInvoicePromises.find(inv => inv.id === '7');
           if (!existingInvoice) {
-            console.log('🔍 Adding user invoice to userInvoices array');
             userInvoicePromises.push({
               id: '7',
               invoiceId: directInvoice.invoiceId,
@@ -359,7 +303,6 @@ export function useInvoiceNFT(address?: Address) {
       
       // Always try to get all InvoiceMinted events to see what exists
       try {
-        console.log('🔍 Getting all InvoiceMinted events to check for user invoices...');
         const allLogs = await readClient.getLogs({
           address: invoiceNFTContract.address,
           event: {
@@ -374,31 +317,8 @@ export function useInvoiceNFT(address?: Address) {
           fromBlock: 'earliest',
           toBlock: 'latest'
         });
-        
-        console.log('🔍 All InvoiceMinted events found:', allLogs.length);
-        allLogs.forEach((log, index) => {
-          console.log(`🔍 All Event ${index + 1}:`, {
-            tokenId: log.args.tokenId?.toString(),
-            supplier: log.args.supplier,
-            invoiceId: log.args.invoiceId,
-            isCurrentUser: log.args.supplier === userAddress
-          });
-        });
-        
-        // Check if any events belong to current user
-        const userEvents = allLogs.filter(log => log.args.supplier === userAddress);
-        console.log('🔍 Events belonging to current user:', userEvents.length);
-        console.log('🔍 Current user address:', userAddress);
-        console.log('🔍 All suppliers in events:', allLogs.map(log => log.args.supplier));
-        userEvents.forEach((log, index) => {
-          console.log(`🔍 User Event ${index + 1}:`, {
-            tokenId: log.args.tokenId?.toString(),
-            supplier: log.args.supplier,
-            invoiceId: log.args.invoiceId
-          });
-        });
       } catch (fallbackErr) {
-        console.error('🔍 InvoiceMinted events approach failed:', fallbackErr);
+        return;
       }
       
       setUserInvoices(userInvoicePromises);
@@ -414,7 +334,6 @@ export function useInvoiceNFT(address?: Address) {
 
   // New function to fetch all user invoices (including burned ones)
   const fetchAllUserInvoices = useCallback(async (userAddress: Address) => {
-    console.log('🔍 Fetching all user invoices (including burned) for:', userAddress);
     
     if (!readClient || !invoiceNFTContract.address || !invoiceNFTContract.abi || !userAddress) {
       setUserInvoices([]);
@@ -432,7 +351,6 @@ export function useInvoiceNFT(address?: Address) {
         args: [userAddress],
       }) as bigint[];
 
-      console.log('🔍 User minted tokens:', userMintedTokens);
 
       const allUserInvoices: Invoice[] = [];
 
@@ -467,7 +385,6 @@ export function useInvoiceNFT(address?: Address) {
         }
       }
 
-      console.log('🔍 All user invoices (including burned):', allUserInvoices);
       setUserInvoices(allUserInvoices);
       
     } catch (err) {
@@ -722,7 +639,6 @@ export function useInvoiceNFT(address?: Address) {
         args: [BigInt(tokenId)],
       }) as HistoricalInvoiceRecord;
 
-      console.log('🔍 Historical invoice record for token', tokenId, ':', record);
       return record;
     } catch (err) {
       console.error('Error fetching historical invoice record:', err);
@@ -743,8 +659,6 @@ export function useInvoiceNFT(address?: Address) {
         functionName: 'getUserInvoiceStatistics',
         args: [userAddress],
       }) as UserInvoiceStatistics;
-
-      console.log('🔍 User invoice statistics for', userAddress, ':', stats);
       return stats;
     } catch (err) {
       console.error('Error fetching user invoice statistics:', err);
@@ -765,8 +679,6 @@ export function useInvoiceNFT(address?: Address) {
         functionName: 'getUserMintedTokens',
         args: [userAddress],
       }) as bigint[];
-
-      console.log('🔍 User minted tokens for', userAddress, ':', tokenIds);
       return tokenIds;
     } catch (err) {
       console.error('Error fetching user minted tokens:', err);
@@ -788,7 +700,6 @@ export function useInvoiceNFT(address?: Address) {
         args: [userAddress],
       }) as bigint[];
 
-      console.log('🔍 User burned tokens for', userAddress, ':', tokenIds);
       return tokenIds;
     } catch (err) {
       console.error('Error fetching user burned tokens:', err);
@@ -809,8 +720,6 @@ export function useInvoiceNFT(address?: Address) {
         functionName: 'searchInvoiceById',
         args: [invoiceId],
       }) as HistoricalInvoiceRecord;
-
-      console.log('🔍 Search result for invoice ID', invoiceId, ':', record);
       return record;
     } catch (err) {
       console.error('Error searching invoice by ID:', err);
@@ -836,7 +745,6 @@ export function useInvoiceNFT(address?: Address) {
         args: [userAddress, BigInt(offset), BigInt(limit)],
       }) as HistoricalInvoiceRecord[];
 
-      console.log('🔍 User historical records for', userAddress, ':', records);
       return records;
     } catch (err) {
       console.error('Error fetching user historical records:', err);
@@ -846,13 +754,10 @@ export function useInvoiceNFT(address?: Address) {
 
   // Effect to fetch invoices when address changes
   useEffect(() => {
-    console.log('useInvoiceNFT useEffect running with address:', address);
     if (address && typeof address === 'string' && address.length > 0) {
-      console.log('useInvoiceNFT: Fetching invoices for address:', address);
       fetchInvoices(address);
       fetchUserInvoices(address);
     } else {
-      console.log('useInvoiceNFT: Skipping fetch, missing address:', address);
       setError(new Error('Effect: missing address, not fetching invoices.'));
     }
   }, [address, fetchInvoices, fetchUserInvoices]);

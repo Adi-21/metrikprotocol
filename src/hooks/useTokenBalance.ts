@@ -16,16 +16,6 @@ export function useTokenBalance() {
   );
   const address = privyWallet?.address;
 
-  console.log('🔍 useTokenBalance - Wallets:', wallets);
-  console.log('🔍 useTokenBalance - Wallet details:', wallets.map(w => ({
-    type: w.type,
-    address: w.address,
-    walletClientType: w.walletClientType,
-    meta: w.meta
-  })));
-  console.log('🔍 useTokenBalance - Privy wallet:', privyWallet);
-  console.log('🔍 useTokenBalance - Address type:', typeof address);
-  console.log('🔍 useTokenBalance - Address value:', address);
   const [balances, setBalances] = useState<{
     metrik: string;
     usdc: string;
@@ -57,13 +47,6 @@ export function useTokenBalance() {
       enabled: !!address,
     },
   });
-
-  console.log('🔍 useTokenBalance - Address:', address);
-  console.log('🔍 useTokenBalance - USDC Contract:', contracts.usdc.address);
-  console.log('🔍 useTokenBalance - Raw USDC Balance from wagmi:', usdcBalance);
-  console.log('🔍 useTokenBalance - USDC Error:', usdcError);
-  console.log('🔍 useTokenBalance - USDC Error Details:', usdcErrorDetails);
-  console.log('🔍 useTokenBalance - Query enabled:', !!address);
 
   // Read native token (AVAX) balance
   const { data: ethBalance } = useBalance({
@@ -104,15 +87,11 @@ export function useTokenBalance() {
 
   // Function to manually refresh balances
   const refreshBalances = useCallback(async () => {
-    console.log('🔄 refreshBalances called');
     if (!address || !publicClient) {
-      console.log('🔄 refreshBalances - Missing address or publicClient:', { address: !!address, publicClient: !!publicClient });
       return;
     }
 
     try {
-      console.log('🔄 Refreshing balances for address:', address);
-      console.log('🔄 USDC contract address:', contracts.usdc.address);
       
       // Refresh USDC balance
       const usdcBalance = await publicClient.readContract({
@@ -122,9 +101,6 @@ export function useTokenBalance() {
         args: [address as Address],
       });
 
-      console.log('🔄 Raw USDC balance:', usdcBalance);
-      console.log('🔄 Formatted USDC balance:', formatAmount(usdcBalance as bigint, 6));
-
       // Refresh METRIK balance
       const metrikBalance = await publicClient.readContract({
         address: contracts.metrikToken.address,
@@ -133,19 +109,10 @@ export function useTokenBalance() {
         args: [address as Address],
       });
 
-      console.log('🔄 Raw METRIK balance:', metrikBalance);
-      console.log('🔄 Formatted METRIK balance:', formatAmount(metrikBalance as bigint));
-
       setBalances({
         metrik: formatAmount(metrikBalance as bigint),
         usdc: formatAmount(usdcBalance as bigint, 6),
         eth: balances.eth, // Keep existing ETH balance
-      });
-
-      console.log('🔄 Updated balances state:', {
-        metrik: formatAmount(metrikBalance as bigint),
-        usdc: formatAmount(usdcBalance as bigint, 6),
-        eth: balances.eth,
       });
     } catch (error) {
       console.error('Error refreshing balances:', error);
@@ -153,11 +120,8 @@ export function useTokenBalance() {
   }, [address, publicClient, balances.eth]);
 
   const debugRefetchUsdcBalance = useCallback(async () => {
-    console.log('🔄 debugRefetchUsdcBalance called');
-    console.log('🔄 debugRefetchUsdcBalance - refetchUsdcBalance function:', refetchUsdcBalance);
     try {
       const result = await refetchUsdcBalance();
-      console.log('🔄 debugRefetchUsdcBalance - result:', result);
     } catch (error) {
       console.error('🔄 debugRefetchUsdcBalance - error:', error);
     }

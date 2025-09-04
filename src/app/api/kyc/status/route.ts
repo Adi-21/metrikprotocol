@@ -17,7 +17,6 @@ export async function GET(request: Request) {
     .maybeSingle();
 
   if (error) {
-    console.error('KYC status read error', error);
     return NextResponse.json({ kycStatus: 'not_submitted' });
   }
 

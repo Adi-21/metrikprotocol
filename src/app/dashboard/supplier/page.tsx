@@ -39,7 +39,6 @@ export default function SupplierDashboard() {
   const { wallets } = useWallets();
   const { status: kycStatus } = useKyc();
   const { user } = usePrivy();
-  console.log('KYC Status:', kycStatus);
   const privyWallet = wallets.find(w => w.walletClientType === 'privy' || (w.meta && w.meta.id === 'io.privy.wallet'));
   const address = privyWallet?.address;
 

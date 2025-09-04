@@ -77,8 +77,6 @@ export function useStaking(addressOverride?: string) {
     }
 
     try {
-      console.log('🔍 Fetching tier for address:', userAddress || address || '0x0');
-      console.log('🔍 Using staking contract address:', stakingContract.address);
       const tier = await publicClient.readContract({
         address: stakingContract.address,
         abi: stakingContract.abi,
@@ -86,7 +84,6 @@ export function useStaking(addressOverride?: string) {
         args: [userAddress || address || '0x0'],
       });
       const tierNumber = Number(tier);
-      console.log('🔍 Raw tier from contract:', tier, 'Converted to number:', tierNumber);
       
       // Debug: Let's also check the staked amount that the getTier function sees
       try {
@@ -96,8 +93,6 @@ export function useStaking(addressOverride?: string) {
           functionName: 'getStakedAmount',
           args: [userAddress || address || '0x0'],
         });
-              console.log('🔍 Staked amount for tier calculation (wei):', stakedForTier);
-      console.log('🔍 Staked amount for tier calculation (METRIK):', Number(stakedForTier) / 1e18);
       } catch (err) {
         console.error('Error fetching staked amount for tier debug:', err);
       }
@@ -117,17 +112,14 @@ export function useStaking(addressOverride?: string) {
     }
 
     try {
-      console.log('🔍 Fetching staked amount for address:', userAddress || address || '0x0');
       const amount = await publicClient.readContract({
         address: stakingContract.address,
         abi: stakingContract.abi,
         functionName: 'getStakedAmount',
         args: [userAddress || address || '0x0'],
       });
-      console.log('🔍 Raw staked amount from contract:', amount);
       // METRIK tokens use 18 decimals like standard ERC20
       const formattedAmount = formatAmount(amount as bigint, 18);
-      console.log('🔍 Formatted staked amount:', formattedAmount);
       return formattedAmount;
     } catch (err) {
       console.error('Error fetching staked amount:', err);
@@ -149,7 +141,6 @@ export function useStaking(addressOverride?: string) {
         args: [userAddress as `0x${string}`],
       }) as any[];
       
-      console.log('🔍 getActiveStakes result:', stakes);
       
       // Convert the raw stakes to StakeInfo format
       return stakes.map((stake: any, index: number) => ({
@@ -182,7 +173,6 @@ export function useStaking(addressOverride?: string) {
         args: [userAddress as `0x${string}`],
       }) as [bigint, bigint, bigint];
       
-      console.log('🔍 getStakeUsage result:', usage);
       
       return {
         total: usage[0],
@@ -208,7 +198,6 @@ export function useStaking(addressOverride?: string) {
         args: [userAddress as `0x${string}`],
       }) as bigint;
       
-      console.log('🔍 getStakeHistoryLength result:', historyLength);
       
       const history = [];
       for (let i = 0; i < Number(historyLength); i++) {
@@ -225,7 +214,6 @@ export function useStaking(addressOverride?: string) {
         }
       }
       
-      console.log('🔍 getStakeHistory result:', history);
       return history;
     } catch (err) {
       console.error('Error fetching stake history:', err);
@@ -285,12 +273,11 @@ export function useStaking(addressOverride?: string) {
     try {
       // Get tier
       const tier = await getTier();
-      console.log('🔍 Setting current tier to:', tier);
       setCurrentTier(tier);
       
       // Get total staked amount
       const totalStaked = await getStakedAmount();
-      console.log('🔍 Staking debug - Raw staked amount:', totalStaked);
+ 
       setTotalStakedAmount(totalStaked);
       setStakedAmount(totalStaked);
       
@@ -302,15 +289,13 @@ export function useStaking(addressOverride?: string) {
           functionName: 'getStakedAmount',
           args: [address || '0x0'],
         });
-        console.log('🔍 Raw staked amount from contract (wei):', rawAmount);
-        console.log('🔍 Raw staked amount in METRIK:', Number(rawAmount) / 1e18);
       } catch (err) {
         console.error('Error fetching raw staked amount:', err);
       }
       
       // Get active stakes
       let stakes = await getActiveStakes(address);
-      console.log('🔍 fetchStakedInfo - Active stakes:', stakes);
+
       
       // For each stake, fetch pending and claimed rewards
       stakes = await Promise.all(stakes.map(async (stake, idx) => {
@@ -330,7 +315,7 @@ export function useStaking(addressOverride?: string) {
       
       // Get stake usage
       const usage = await getStakeUsage(address);
-      console.log('🔍 fetchStakedInfo - Stake usage:', usage);
+
       setStakeUsage(usage);
       
       // Calculate duration from active stakes
@@ -420,16 +405,7 @@ export function useStaking(addressOverride?: string) {
         throw new Error('Public client not available. Please ensure network is connected.');
       }
 
-      console.log('Current useWalletClient state:', { walletClient: typeof walletClient, walletClientValue: walletClient });
-      console.log('Current publicClient chain ID:', publicClient?.chain.id, '(Expected:', publicClient?.chain.id, ')');
 
-      console.log('Checking METRIK balance state:', {
-        isBalanceLoading,
-        isBalanceError,
-        balanceError,
-        metrikBalance: metrikBalance?.toString(),
-        address
-      });
 
       if (isBalanceLoading) {
         throw new Error('Loading METRIK balance... Please wait.');
@@ -481,7 +457,7 @@ export function useStaking(addressOverride?: string) {
       // First approve the staking contract to spend METRIK tokens
       let approveTxHash: Hash | undefined;
 
-      console.log('Before approve walletClient.writeContract call.');
+
 
       try {
         const { request } = await publicClient!.simulateContract({
@@ -493,7 +469,6 @@ export function useStaking(addressOverride?: string) {
         });
 
         approveTxHash = await walletClient.writeContract(request);
-        console.log('approveTxHash result:', approveTxHash);
 
       } catch (approveError) {
         console.error('Error during approve transaction call:', approveError);
@@ -503,18 +478,6 @@ export function useStaking(addressOverride?: string) {
       if (typeof approveTxHash !== 'string') {
         throw new Error('Transaction approval failed or was rejected. `walletClient.writeContract` did not return a valid transaction hash.');
       }
-
-      console.log('Approval transaction sent:', approveTxHash);
-
-      console.log('Waiting for approval transaction confirmation...');
-      const receipt = await publicClient!.waitForTransactionReceipt({ hash: approveTxHash });
-      console.log('Approval transaction confirmed:', receipt);
-
-      // Then stake the tokens
-      console.log('Staking tokens...', {
-        amount: parsedAmount.toString(),
-        duration: durationInSeconds.toString()
-      });
 
       let stakeTxHash: Hash | undefined;
 
@@ -528,7 +491,7 @@ export function useStaking(addressOverride?: string) {
         });
 
         stakeTxHash = await walletClient.writeContract(request);
-        console.log('stakeTxHash result:', stakeTxHash);
+
       } catch (stakeError) {
         console.error('Error during stake transaction call:', stakeError);
         throw new Error(`Staking transaction failed: ${(stakeError as Error).message}`);
@@ -538,11 +501,7 @@ export function useStaking(addressOverride?: string) {
         throw new Error('Staking transaction failed or was rejected. `walletClient.writeContract` did not return a valid transaction hash.');
       }
       
-      console.log('Stake transaction sent:', stakeTxHash);
-
-      console.log('Waiting for stake transaction confirmation...');
-      const stakeReceipt = await publicClient!.waitForTransactionReceipt({ hash: stakeTxHash });
-      console.log('Stake transaction confirmed:', stakeReceipt);
+ 
 
       toast.success('Stake successful!');
       return stakeTxHash;
@@ -564,14 +523,11 @@ export function useStaking(addressOverride?: string) {
         throw new Error('Staking contract not available.');
       }
       
-      console.log('🔍 Unstaking stake at index:', stakeIndex);
-      console.log('🔍 isPrivy:', isPrivy);
-      console.log('🔍 address:', address);
-      console.log('🔍 privyWallet:', privyWallet);
+  
       
       if (isPrivy) {
         // Use seamless transaction for suppliers
-        console.log('🔍 Using seamless transaction flow for unstaking');
+  
         toast.info('Processing your unstake request...');
         
         const data = encodeFunctionData({
@@ -580,8 +536,7 @@ export function useStaking(addressOverride?: string) {
           args: [BigInt(stakeIndex)],
         });
         
-        console.log('🔍 Encoded function data:', data);
-        console.log('🔍 Contract address:', stakingContract.address);
+ 
         
         const hash = await executeTransaction(
           stakingContract.address,
@@ -590,11 +545,10 @@ export function useStaking(addressOverride?: string) {
           publicClient?.chain.id
         );
         
-        console.log('🔍 Transaction hash:', hash);
         toast.success('Unstake successful! Your tokens have been returned.');
         return hash;
       } else {
-        console.log('🔍 Using regular wallet flow for unstaking');
+          return;
       }
       
       if (!walletClient || !address || !publicClient) {

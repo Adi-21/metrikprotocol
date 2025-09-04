@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { usePublicClient, useAccount } from 'wagmi';
 import { useWallets, useSendTransaction } from '@privy-io/react-auth';
+import { contracts } from '@/lib/wagmi/config';
 import { toast } from 'react-toastify';
 
 export function useOneClickRepay() {
@@ -57,6 +58,46 @@ export function useOneClickRepay() {
 
       // Step 2: Execute the batch transactions
       console.log('🔄 Executing batch repay transactions...');
+
+      // Pre-repay on-chain snapshot and simulation to surface revert reasons
+      try {
+        const id = BigInt(invoiceId);
+        const [loanDetails, allowance, usdcBal, ownerOf] = await Promise.all([
+          publicClient!.readContract({ address: contracts.lendingPool.address, abi: contracts.lendingPool.abi, functionName: 'getUserLoanDetails', args: [userAddress as `0x${string}`, id] }),
+          publicClient!.readContract({ address: contracts.usdc.address, abi: contracts.usdc.abi, functionName: 'allowance', args: [userAddress as `0x${string}`, contracts.lendingPool.address] }),
+          publicClient!.readContract({ address: contracts.usdc.address, abi: contracts.usdc.abi, functionName: 'balanceOf', args: [userAddress as `0x${string}`] }),
+          publicClient!.readContract({ address: contracts.invoiceNFT.address, abi: contracts.invoiceNFT.abi, functionName: 'ownerOf', args: [id] }),
+        ]);
+        console.log('🔎 Repay precheck', {
+          invoiceId,
+          // getUserLoanDetails returns [amount, dueDate, isRepaid, isLiquidated, interestAccrued]
+          amount: (loanDetails as any)?.[0]?.toString?.(),
+          dueDate: (loanDetails as any)?.[1]?.toString?.(),
+          isRepaid: (loanDetails as any)?.[2],
+          isLiquidated: (loanDetails as any)?.[3],
+          interestAccrued: (loanDetails as any)?.[4]?.toString?.(),
+          invoiceOwner: ownerOf,
+          allowance: (allowance as bigint)?.toString?.(),
+          usdcBalance: (usdcBal as bigint)?.toString?.(),
+          lendingPool: contracts.lendingPool.address,
+          usdc: contracts.usdc.address,
+        });
+
+        try {
+          await publicClient!.simulateContract({
+            account: userAddress as `0x${string}`,
+            address: contracts.lendingPool.address,
+            abi: contracts.lendingPool.abi,
+            functionName: 'repay',
+            args: [id],
+          });
+          console.log('🔎 Repay simulation passed (no revert)');
+        } catch (simErr) {
+          console.error('🛑 Repay simulation reverted (root cause):', simErr);
+        }
+      } catch (e) {
+        console.warn('Repay precheck failed', e);
+      }
       
       const results = [];
       for (let i = 0; i < batchCalls.length; i++) {
