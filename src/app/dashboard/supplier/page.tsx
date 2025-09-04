@@ -43,24 +43,6 @@ export default function SupplierDashboard() {
   const privyWallet = wallets.find(w => w.walletClientType === 'privy' || (w.meta && w.meta.id === 'io.privy.wallet'));
   const address = privyWallet?.address;
 
-  // Debug: log raw KYC record from database
-  useEffect(() => {
-    const logKycRecord = async () => {
-      try {
-        const qs = new URLSearchParams();
-        if (address) qs.set('address', address);
-        const email = user?.email?.address;
-        if (email && !address) qs.set('email', email);
-        const res = await fetch(`/api/kyc/status?${qs.toString()}`, { cache: 'no-store' });
-        const data = await res.json();
-        console.log('KYC DB record:', data?.record || null);
-      } catch (err) {
-        console.warn('Failed to fetch KYC record for debug', err);
-      }
-    };
-    logKycRecord();
-  }, [address, user]);
-
   // Hooks for data
   const { stakedAmount, currentTier, metrikBalance } = useStaking(address as `0x${string}`);
   const { outstandingLoans, repaymentStats } = useRepay(address as `0x${string}`);
