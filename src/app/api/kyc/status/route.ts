@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getKyc } from '@/lib/kycStore';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,8 +9,19 @@ export async function GET(request: Request) {
   const email = (searchParams.get('email') || '').trim().toLowerCase();
   const id = (address || email).replace(/^<|>$/g, '');
   if (!id) return NextResponse.json({ kycStatus: 'not_submitted' });
-  const record = await getKyc(id);
-  return NextResponse.json({ kycStatus: record?.kycStatus || 'not_submitted', record: record || null });
+
+  const { data, error } = await supabase
+    .from('kyc_records')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('KYC status read error', error);
+    return NextResponse.json({ kycStatus: 'not_submitted' });
+  }
+
+  return NextResponse.json({ kycStatus: data?.kycStatus || 'not_submitted', record: data || null });
 }
 
 

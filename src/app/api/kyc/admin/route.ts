@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
-import { listPending, upsertKyc, getKyc } from '@/lib/kycStore';
 import { SignJWT } from 'jose';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const pending = await listPending();
-  return NextResponse.json({ pending });
+  const { data, error } = await supabase
+    .from('kyc_records')
+    .select('*')
+    .eq('kycStatus', 'pending_review');
+  if (error) return NextResponse.json({ pending: [] });
+  return NextResponse.json({ pending: data || [] });
 }
 
 export async function POST(request: Request) {
@@ -17,13 +21,23 @@ export async function POST(request: Request) {
     const normalizedId = String(id).trim().toLowerCase().replace(/^<|>$/g, '');
 
     if (action === 'reject') {
-      const rec = await upsertKyc({ id: normalizedId, kycStatus: 'rejected', rejectionReason: reason || 'Not specified' });
-      return NextResponse.json({ success: true, record: rec });
+      const { data, error } = await supabase
+        .from('kyc_records')
+        .update({ kycStatus: 'rejected', rejectionReason: reason || 'Not specified', updatedAt: new Date().toISOString() })
+        .eq('id', normalizedId)
+        .select()
+        .maybeSingle();
+      if (error) throw error;
+      return NextResponse.json({ success: true, record: data });
     }
 
     // Approve: issue a simple VC-like signed JWT (dev-only)
-    const rec = await getKyc(normalizedId);
-    const wallet = rec?.walletAddress || id;
+    const { data: rec } = await supabase
+      .from('kyc_records')
+      .select('*')
+      .eq('id', normalizedId)
+      .maybeSingle();
+    const wallet = rec?.walletAddress || normalizedId;
     const issuer = process.env.ZKYC_ISSUER_DID || 'did:metrik:issuer';
     const secret = new TextEncoder().encode(process.env.ZKYC_ISSUER_SECRET || 'dev-secret-change-me');
 
@@ -31,17 +45,20 @@ export async function POST(request: Request) {
       iss: issuer,
       sub: `did:pkh:eip155:1:${wallet}`,
       iat: Math.floor(Date.now() / 1000),
-      metrik: {
-        kycVerified: true,
-        verifiedBy: 'ProtocolVerifier',
-      },
+      metrik: { kycVerified: true, verifiedBy: 'ProtocolVerifier' },
     };
 
     const jwt = await new SignJWT(vcPayload)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .sign(secret);
 
-    const updated = await upsertKyc({ id: normalizedId, kycStatus: 'verified', verifiableCredential: { jwt, payload: vcPayload } });
+    const { data: updated, error } = await supabase
+      .from('kyc_records')
+      .update({ kycStatus: 'verified', verifiableCredential: { jwt, payload: vcPayload }, updatedAt: new Date().toISOString() })
+      .eq('id', normalizedId)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
     return NextResponse.json({ success: true, record: updated });
   } catch (error) {
     console.error('KYC admin error', error);

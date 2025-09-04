@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { useKyc } from '@/hooks/useKyc';
 
 export default function KycModal() {
   const { authenticated, user } = usePrivy();
@@ -13,6 +14,7 @@ export default function KycModal() {
   const [docs, setDocs] = useState<File[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const { refresh } = useKyc();
 
   useEffect(() => {
     const handler = () => setOpen(true);
@@ -59,6 +61,8 @@ export default function KycModal() {
       const res = await fetch('/api/kyc/submit', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Submit failed');
+      // Immediately refresh KYC status so UI shows pending_review without reload
+      try { await refresh(); } catch {}
       alert('KYC submitted. We are reviewing your documents. You will gain access once verified.');
       setOpen(false);
     } catch (e) {

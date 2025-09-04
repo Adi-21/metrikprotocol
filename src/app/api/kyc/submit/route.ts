@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { upsertKyc } from '@/lib/kycStore';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,6 @@ export async function POST(request: Request) {
     const documentUrls = JSON.parse((formData.get('documentUrls') as string | null) || '[]');
     const imageUrls = JSON.parse((formData.get('imageUrls') as string | null) || '[]');
 
-    // In dev, we just record the filenames; replace with private object storage in prod.
     for (const [key, value] of formData.entries()) {
       if (key === 'file' && value instanceof File) {
         fileNames.push(value.name);
@@ -24,8 +23,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing address or email' }, { status: 400 });
     }
 
-    const id = address || email!;
-    const record = await upsertKyc({
+    const id = (address || email!)!.toLowerCase();
+
+    const payload = {
       id,
       email,
       walletAddress: address,
@@ -34,10 +34,19 @@ export async function POST(request: Request) {
       documentUrls,
       imageUrls,
       kycStatus: 'pending_review',
-      rejectionReason: undefined,
-    });
+      rejectionReason: null,
+      updatedAt: new Date().toISOString(),
+    };
 
-    return NextResponse.json({ success: true, record });
+    const { data, error } = await supabase
+      .from('kyc_records')
+      .upsert(payload, { onConflict: 'id' })
+      .select()
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return NextResponse.json({ success: true, record: data });
   } catch (error) {
     console.error('KYC submit error', error);
     return NextResponse.json({ error: 'Failed to submit KYC' }, { status: 500 });
