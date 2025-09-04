@@ -545,10 +545,11 @@ export function useStaking(addressOverride?: string) {
           publicClient?.chain.id
         );
         
+ 
         toast.success('Unstake successful! Your tokens have been returned.');
         return hash;
       } else {
-          return;
+        console.error('🔍 Using regular wallet flow for unstaking');
       }
       
       if (!walletClient || !address || !publicClient) {
