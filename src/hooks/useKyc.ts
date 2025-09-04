@@ -31,6 +31,13 @@ export function useKyc() {
     }
   }, [authenticated, refresh]);
 
+  // React to global KYC updates triggered elsewhere (e.g., KycModal)
+  useEffect(() => {
+    const handler = () => refresh();
+    window.addEventListener('kyc-status-updated', handler as any);
+    return () => window.removeEventListener('kyc-status-updated', handler as any);
+  }, [refresh]);
+
   const submit = useCallback(async (files: File[]) => {
     if (!authenticated) throw new Error('Not authenticated');
     setLoading(true);
@@ -42,7 +49,10 @@ export function useKyc() {
       const res = await fetch('/api/kyc/submit', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Submit failed');
+      // Optimistic update
       setStatus('pending_review');
+      // Broadcast so other hook instances refresh
+      window.dispatchEvent(new CustomEvent('kyc-status-updated'));
       return true;
     } finally {
       setLoading(false);

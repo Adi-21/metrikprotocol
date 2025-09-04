@@ -21,7 +21,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ kycStatus: 'not_submitted' });
   }
 
-  return NextResponse.json({ kycStatus: data?.kycStatus || 'not_submitted', record: data || null });
+  // Map lowercase DB column to camelCase API field
+  const status = (data as any)?.kycstatus || (data as any)?.kycStatus || 'not_submitted';
+  return NextResponse.json({ kycStatus: status, record: data || null });
 }
 
 

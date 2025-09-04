@@ -8,16 +8,10 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const address = (formData.get('address') as string | null)?.toLowerCase() || undefined;
     const email = (formData.get('email') as string | null) || undefined;
-    const fileNames: string[] = [];
     const companyName = (formData.get('companyName') as string | null) || undefined;
     const documentUrls = JSON.parse((formData.get('documentUrls') as string | null) || '[]');
     const imageUrls = JSON.parse((formData.get('imageUrls') as string | null) || '[]');
-
-    for (const [key, value] of formData.entries()) {
-      if (key === 'file' && value instanceof File) {
-        fileNames.push(value.name);
-      }
-    }
+    const documentPaths = JSON.parse((formData.get('documentPaths') as string | null) || '[]');
 
     if (!address && !email) {
       return NextResponse.json({ error: 'Missing address or email' }, { status: 400 });
@@ -25,17 +19,19 @@ export async function POST(request: Request) {
 
     const id = (address || email!)!.toLowerCase();
 
-    const payload = {
+    // Use lowercase keys to match Supabase columns
+    const payload: Record<string, any> = {
       id,
       email,
-      walletAddress: address,
-      companyName,
-      documentPaths: fileNames,
-      documentUrls,
-      imageUrls,
-      kycStatus: 'pending_review',
-      rejectionReason: null,
-      updatedAt: new Date().toISOString(),
+      walletaddress: address,
+      companyname: companyName,
+      documentpaths: documentPaths,
+      documenturls: documentUrls,
+      imageurls: imageUrls,
+      kycstatus: 'pending_review',
+      rejectionreason: null,
+      verifiablecredential: null,
+      updatedat: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
@@ -47,9 +43,9 @@ export async function POST(request: Request) {
     if (error) throw error;
 
     return NextResponse.json({ success: true, record: data });
-  } catch (error) {
+  } catch (error: any) {
     console.error('KYC submit error', error);
-    return NextResponse.json({ error: 'Failed to submit KYC' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to submit KYC', details: error?.message || String(error) }, { status: 500 });
   }
 }
 

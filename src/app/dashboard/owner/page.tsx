@@ -277,17 +277,24 @@ export default function OwnerDashboard() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Business</TableHead>
-                  <TableHead>Contact</TableHead>
                   <TableHead>Documents</TableHead>
                   <TableHead>Updated</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {kycPending.map((r) => (
+                {kycPending.map((r) => {
+                  const rec: any = {
+                    companyName: (r as any).companyName ?? (r as any).companyname,
+                    email: (r as any).email,
+                    imageUrls: (r as any).imageUrls ?? (r as any).imageurls ?? [],
+                    documentUrls: (r as any).documentUrls ?? (r as any).documenturls ?? [],
+                    updatedAt: (r as any).updatedAt ?? (r as any).updatedat,
+                  };
+                  return (
                   <TableRow key={r.id}>
                     <TableCell className="text-sm">
-                      <div className="font-semibold">{(r as any).companyName || '—'}</div>
+                      <div className="font-semibold">{rec.companyName || '—'}</div>
                       <div className="font-mono text-xs text-gray-600 flex items-center gap-2">
                         <span>{r.id.length > 20 ? `${r.id.slice(0, 8)}...${r.id.slice(-4)}` : r.id}</span>
                         <button
@@ -299,20 +306,19 @@ export default function OwnerDashboard() {
                         </button>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm">{(r as any).email || '-'}</TableCell>
                     <TableCell className="text-sm">
                       <div className="flex flex-wrap gap-2">
-                        {((r as any).imageUrls || []).slice(0,4).map((url: string, idx: number) => (
+                        {(rec.imageUrls || []).slice(0,4).map((url: string, idx: number) => (
                           <a key={idx} href={url} target="_blank" className="block w-12 h-12 rounded overflow-hidden border">
                             <img src={url} alt="doc" className="w-full h-full object-cover" />
                           </a>
                         ))}
-                        {((r as any).documentUrls || []).slice(0,2).map((url: string, idx: number) => (
+                        {(rec.documentUrls || []).slice(0,2).map((url: string, idx: number) => (
                           <a key={`doc-${idx}`} href={url} target="_blank" className="text-xs underline text-indigo-600">PDF {idx+1}</a>
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm">{new Date((r as any).updatedAt).toLocaleString()}</TableCell>
+                    <TableCell className="text-sm">{rec.updatedAt ? new Date(rec.updatedAt).toLocaleString() : '-'}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button
@@ -353,7 +359,7 @@ export default function OwnerDashboard() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                );})}
               </TableBody>
             </Table>
           )}

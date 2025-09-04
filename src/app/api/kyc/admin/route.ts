@@ -8,7 +8,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('kyc_records')
     .select('*')
-    .eq('kycStatus', 'pending_review');
+    .eq('kycstatus', 'pending_review');
   if (error) return NextResponse.json({ pending: [] });
   return NextResponse.json({ pending: data || [] });
 }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     if (action === 'reject') {
       const { data, error } = await supabase
         .from('kyc_records')
-        .update({ kycStatus: 'rejected', rejectionReason: reason || 'Not specified', updatedAt: new Date().toISOString() })
+        .update({ kycstatus: 'rejected', rejectionreason: reason || 'Not specified', updatedat: new Date().toISOString() })
         .eq('id', normalizedId)
         .select()
         .maybeSingle();
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       .select('*')
       .eq('id', normalizedId)
       .maybeSingle();
-    const wallet = rec?.walletAddress || normalizedId;
+    const wallet = (rec as any)?.walletaddress || normalizedId;
     const issuer = process.env.ZKYC_ISSUER_DID || 'did:metrik:issuer';
     const secret = new TextEncoder().encode(process.env.ZKYC_ISSUER_SECRET || 'dev-secret-change-me');
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
     const { data: updated, error } = await supabase
       .from('kyc_records')
-      .update({ kycStatus: 'verified', verifiableCredential: { jwt, payload: vcPayload }, updatedAt: new Date().toISOString() })
+      .update({ kycstatus: 'verified', verifiablecredential: { jwt, payload: vcPayload }, updatedat: new Date().toISOString() })
       .eq('id', normalizedId)
       .select()
       .maybeSingle();
