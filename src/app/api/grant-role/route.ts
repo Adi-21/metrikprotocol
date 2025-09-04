@@ -5,6 +5,7 @@ import invoiceNFTArtifact from '@/lib/contracts/abis/InvoiceNFT.json';
 console.log('DEBUG: Node.js version:', process.version);
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL!;
+const CHAIN_ID = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!;
 console.log('DEBUG grant-role API: RPC_URL =', RPC_URL);
 const PRIVATE_KEY_OWNER = process.env.PRIVATE_KEY_OWNER!;
 const INVOICE_NFT_ADDRESS = process.env.NEXT_PUBLIC_INVOICE_NFT_ADDRESS!;
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     console.log('DEBUG: fetch direct result:', fetchData);
 
     console.log('DEBUG: Creating provider...');
-    const provider = new JsonRpcProvider(RPC_URL, 5115);
+    const provider = new JsonRpcProvider(RPC_URL, CHAIN_ID );
     console.log('DEBUG: Provider created. Getting block number...');
     const block = await provider.getBlockNumber();
     console.log('DEBUG: Block number from provider:', block);

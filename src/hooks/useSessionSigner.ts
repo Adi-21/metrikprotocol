@@ -2,8 +2,6 @@ import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { usePrivy, useSessionSigners, useSendTransaction } from '@privy-io/react-auth';
 import { encodeFunctionData } from 'viem';
-import metrikAbi from '@/lib/contracts/abis/MockERC20.json';
-import stakingAbi from '@/lib/contracts/abis/Staking.json';
 
 export function useSessionSigner(wallets?: any[]) {
   const { getAccessToken, authenticated } = usePrivy();
@@ -14,7 +12,7 @@ export function useSessionSigner(wallets?: any[]) {
     to: string,
     data: string,
     value: bigint = 0n,
-    chainId: number = 5115
+    chainId: number = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID!)
   ) => {
     try {
       if (!authenticated) {
@@ -153,7 +151,7 @@ export function useSessionSigner(wallets?: any[]) {
       data: string;
       value?: bigint;
     }>,
-    chainId: number = 5115
+    chainId: number = parseInt(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!)
   ) => {
     try {
       const identityToken = await getAccessToken();
