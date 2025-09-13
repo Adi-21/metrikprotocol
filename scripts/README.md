@@ -10,6 +10,7 @@ There are two token minting scripts available:
 
 Mints tokens to the owner address only.
 
+
 #### Prerequisites
 
 1. **Environment Variables**: Make sure your `.env` file contains:

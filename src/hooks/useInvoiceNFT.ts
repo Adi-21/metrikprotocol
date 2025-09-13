@@ -115,94 +115,100 @@ export function useInvoiceNFT(address?: Address) {
       
       const invoicesArr = [];
       
-      // Also try to directly check for token 6 (your invoice)
-      try {
-        const directToken6 = await readClient.readContract({
-          address: invoiceNFTContract.address,
-          abi: invoiceNFTContract.abi,
-          functionName: 'getInvoiceDetails',
-          args: [BigInt(6)],
-        }) as RawInvoice;
-        
-        // If token 6 exists, add it to the invoices array
-        if (directToken6 && directToken6.supplier) {
-          invoicesArr.push({ 
-            id: '6', 
-            invoiceId: directToken6.invoiceId,
-            supplier: directToken6.supplier,
-            buyer: directToken6.buyer,
-            creditAmount: directToken6.creditAmount.toString(),
-            dueDate: new Date(Number(directToken6.dueDate) * 1000),
-            ipfsHash: directToken6.ipfsHash,
-            isVerified: directToken6.isVerified
-          });
-        } else {
-          return;
-        }
-      } catch (err) {
-        return;
-      }
-      
-      // Also try to check if token 6 exists using _exists function
-      try {
-        const tokenExists = await readClient.readContract({
-          address: invoiceNFTContract.address,
-          abi: invoiceNFTContract.abi,
-          functionName: '_exists',
-          args: [BigInt(6)],
-        });
-      } catch (err) {
-        return;
-      }
-      const foundTokenIds = new Set<string>();
-      
-      for (let i = 0; i < maxTokensToCheck; i++) {
+      // Check for existing invoices by checking token IDs 1-20
+      console.log('🔍 fetchInvoices: Checking for existing invoices...');
+      for (let tokenId = 1; tokenId <= 20; tokenId++) {
         try {
-          const tokenId = await readClient.readContract({
-          address: invoiceNFTContract.address,
-          abi: invoiceNFTContract.abi,
-          functionName: 'tokenByIndex',
-            args: [BigInt(i)],
-          });
-          
-          // Skip if we already processed this tokenId
-          if (foundTokenIds.has((tokenId as bigint).toString())) {
-            continue;
-          }
-          foundTokenIds.add((tokenId as bigint).toString());
-          
-          const invoice = await readClient.readContract({
-          address: invoiceNFTContract.address,
-          abi: invoiceNFTContract.abi,
-          functionName: 'getInvoiceDetails',
-          args: [tokenId],
+          const invoiceDetails = await readClient.readContract({
+            address: invoiceNFTContract.address,
+            abi: invoiceNFTContract.abi,
+            functionName: 'getInvoiceDetails',
+            args: [BigInt(tokenId)],
           }) as RawInvoice;
-          invoicesArr.push({ 
-            id: (tokenId as bigint).toString(), 
-            invoiceId: invoice.invoiceId,
-            supplier: invoice.supplier,
-            buyer: invoice.buyer,
-            creditAmount: invoice.creditAmount.toString(),
-            dueDate: new Date(Number(invoice.dueDate) * 1000),
-            ipfsHash: invoice.ipfsHash,
-            isVerified: invoice.isVerified
-          });
-        } catch (err) {
-          console.error(`useInvoiceNFT: Error fetching token/index ${i}:`, err);
-          // If we get an ERC721OutOfBoundsIndex error, we've reached the end
-          if (err instanceof Error && err.message.includes('ERC721OutOfBoundsIndex')) {
-            break;
+          
+          if (invoiceDetails && invoiceDetails.supplier) {
+            console.log(`✅ Found invoice at token ID ${tokenId}`);
+            invoicesArr.push({
+              id: tokenId.toString(),
+              invoiceId: invoiceDetails.invoiceId,
+              supplier: invoiceDetails.supplier,
+              buyer: invoiceDetails.buyer,
+              creditAmount: invoiceDetails.creditAmount.toString(),
+              dueDate: new Date(Number(invoiceDetails.dueDate) * 1000),
+              ipfsHash: invoiceDetails.ipfsHash,
+              isVerified: invoiceDetails.isVerified
+            });
           }
-          // For other errors, continue but don't break the loop
+        } catch (tokenErr) {
+          // Token doesn't exist or other error, continue to next token
           continue;
         }
       }
+      
+      if (invoicesArr.length === 0) {
+        console.log('📭 No invoices found in token IDs 1-20');
+        setInvoices([]);
+        setError(null); // Clear any previous errors - no invoices is not an error
+        return;
+      }
+      
+      console.log(`📋 fetchInvoices: Found ${invoicesArr.length} invoices total`);
       setInvoices(invoicesArr);
       setError(null);
     } catch (err) {
       console.error('useInvoiceNFT: Error in fetchInvoices:', err);
-      setInvoices([]);
-      setError(err instanceof Error ? err : new Error('Unknown error fetching invoices'));
+      
+      // Fallback: Try to check for common invoice token IDs directly
+      console.log('🔄 fetchInvoices: Trying fallback approach...');
+      try {
+        const fallbackInvoices = [];
+        
+        // Check for common token IDs (1-20) to see if any exist
+        for (let tokenId = 1; tokenId <= 20; tokenId++) {
+          try {
+            const invoiceDetails = await readClient.readContract({
+              address: invoiceNFTContract.address,
+              abi: invoiceNFTContract.abi,
+              functionName: 'getInvoiceDetails',
+              args: [BigInt(tokenId)],
+            }) as RawInvoice;
+            
+            if (invoiceDetails && invoiceDetails.supplier) {
+              fallbackInvoices.push({
+                id: tokenId.toString(),
+                invoiceId: invoiceDetails.invoiceId,
+                supplier: invoiceDetails.supplier,
+                buyer: invoiceDetails.buyer,
+                creditAmount: invoiceDetails.creditAmount.toString(),
+                dueDate: new Date(Number(invoiceDetails.dueDate) * 1000),
+                ipfsHash: invoiceDetails.ipfsHash,
+                isVerified: invoiceDetails.isVerified
+              });
+            }
+          } catch (tokenErr) {
+            // Token doesn't exist or other error, continue
+            continue;
+          }
+        }
+        
+        if (fallbackInvoices.length > 0) {
+          console.log('✅ fetchInvoices fallback found invoices:', fallbackInvoices.length);
+          setInvoices(fallbackInvoices);
+          setError(null);
+          return;
+        } else {
+          // No invoices found in fallback - this is not an error
+          console.log('📭 fetchInvoices fallback: No invoices found');
+          setInvoices([]);
+          setError(null);
+          return;
+        }
+      } catch (fallbackErr) {
+        console.error('fetchInvoices fallback approach also failed:', fallbackErr);
+        // Only set error if fallback also fails
+        setInvoices([]);
+        setError(err instanceof Error ? err : new Error('Unknown error fetching invoices'));
+      }
     }
   }, [readClient, invoiceNFTContract.address, invoiceNFTContract.abi]);
 
@@ -216,6 +222,11 @@ export function useInvoiceNFT(address?: Address) {
     try {
       setIsLoading(true);
       setError(null);
+      // Get the latest block number first
+      const latestBlock = await readClient.getBlockNumber();
+      // Only fetch logs from the last 1,000 blocks to avoid RPC limits
+      const fromBlock = latestBlock > 1000n ? latestBlock - 1000n : 0n;
+      
       const logs = await readClient.getLogs({
         address: invoiceNFTContract.address,
         event: {
@@ -230,7 +241,7 @@ export function useInvoiceNFT(address?: Address) {
         args: {
           supplier: userAddress
         },
-        fromBlock: 'earliest',
+        fromBlock,
         toBlock: 'latest'
       });
     
@@ -314,7 +325,7 @@ export function useInvoiceNFT(address?: Address) {
               { type: 'string', name: 'invoiceId', indexed: false }
             ]
           },
-          fromBlock: 'earliest',
+          fromBlock,
           toBlock: 'latest'
         });
       } catch (fallbackErr) {
@@ -325,6 +336,50 @@ export function useInvoiceNFT(address?: Address) {
       return userInvoicePromises;
     } catch (err) {
       console.error('Error fetching user invoices:', err);
+      
+      // Fallback: Try to check for known invoice token IDs directly
+      console.log('🔄 Trying fallback approach for invoice detection...');
+      try {
+        const fallbackInvoices = [];
+        
+        // Check for common token IDs (1-20) to see if any belong to this user
+        for (let tokenId = 1; tokenId <= 20; tokenId++) {
+          try {
+            const invoiceDetails = await readClient.readContract({
+              address: invoiceNFTContract.address,
+              abi: invoiceNFTContract.abi,
+              functionName: 'getInvoiceDetails',
+              args: [BigInt(tokenId)],
+            }) as RawInvoice;
+            
+            if (invoiceDetails && invoiceDetails.supplier.toLowerCase() === userAddress.toLowerCase()) {
+              fallbackInvoices.push({
+                id: tokenId.toString(),
+                invoiceId: invoiceDetails.invoiceId,
+                supplier: invoiceDetails.supplier,
+                buyer: invoiceDetails.buyer,
+                creditAmount: invoiceDetails.creditAmount.toString(),
+                dueDate: new Date(Number(invoiceDetails.dueDate) * 1000),
+                ipfsHash: invoiceDetails.ipfsHash,
+                isVerified: invoiceDetails.isVerified
+              });
+            }
+          } catch (tokenErr) {
+            // Token doesn't exist or other error, continue
+            continue;
+          }
+        }
+        
+        if (fallbackInvoices.length > 0) {
+          console.log('✅ Fallback found invoices:', fallbackInvoices.length);
+          setUserInvoices(fallbackInvoices);
+          setError(null);
+          return fallbackInvoices;
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback approach also failed:', fallbackErr);
+      }
+      
       setError(err as Error);
       setUserInvoices([]);
     } finally {

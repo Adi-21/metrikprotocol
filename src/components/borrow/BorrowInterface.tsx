@@ -146,7 +146,7 @@ export function BorrowInterface({ invoices }: { invoices: Invoice[] }) {
       setInvoicesError(null);
     } else if (invoices.length === 0) {
       setInvoicesLoading(false);
-      setInvoicesError('No invoices found for this wallet.');
+      setInvoicesError(null);
     } else {
       setInvoicesLoading(false);
       setInvoicesError(null);
@@ -500,34 +500,6 @@ export function BorrowInterface({ invoices }: { invoices: Invoice[] }) {
 
   return (
     <div className="space-y-6">
-      {/* Loading/Error State for Invoices */}
-      {invoicesLoading && (
-        <div className="text-center py-4 text-blue-600">Loading invoices...</div>
-      )}
-      {invoicesError && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {invoicesError}
-          </AlertDescription>
-        </Alert>
-      )}
-      {/* Error Display */}
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            Error loading borrow data: {error}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Defensive Error Banner for Missing Address/Contract */}
-      {invoicesError && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            {invoicesError}
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -6,7 +6,6 @@ const requiredEnvVars = {
   'PRIVY_APP_SECRET': process.env.PRIVY_APP_SECRET,
 };
 
-// Log environment validation
 console.log('🔍 Next.js Environment Variables Check:');
 Object.entries(requiredEnvVars).forEach(([key, value]) => {
   if (value) {

@@ -86,18 +86,73 @@ export function useStaking(addressOverride?: string) {
       const tierNumber = Number(tier);
       
       // Debug: Let's also check the staked amount that the getTier function sees
+      let stakedForTier: bigint = 0n;
       try {
-        const stakedForTier = await publicClient.readContract({
+        stakedForTier = await publicClient.readContract({
           address: stakingContract.address,
           abi: stakingContract.abi,
           functionName: 'getStakedAmount',
           args: [userAddress || address || '0x0'],
-        });
+        }) as bigint;
+        
+        // Also check if there's a points-based tier calculation
+        try {
+          const totalPoints = await publicClient.readContract({
+            address: stakingContract.address,
+            abi: stakingContract.abi,
+            functionName: 'getTotalPoints',
+            args: [userAddress || address || '0x0'],
+          }) as bigint;
+        } catch (pointsErr) {
+          console.log('🔍 Tier Debug - No getTotalPoints function (using staked amount)');
+        }
+        
+        // Check the tier constants in the deployed contract
+        try {
+          const bronzeMin = await publicClient.readContract({
+            address: stakingContract.address,
+            abi: stakingContract.abi,
+            functionName: 'BRONZE_TIER_MIN',
+          }) as bigint;
+          const silverMin = await publicClient.readContract({
+            address: stakingContract.address,
+            abi: stakingContract.abi,
+            functionName: 'SILVER_TIER_MIN',
+          }) as bigint;
+          const goldMin = await publicClient.readContract({
+            address: stakingContract.address,
+            abi: stakingContract.abi,
+            functionName: 'GOLD_TIER_MIN',
+          }) as bigint;
+          const diamondMin = await publicClient.readContract({
+            address: stakingContract.address,
+            abi: stakingContract.abi,
+            functionName: 'DIAMOND_TIER_MIN',
+          }) as bigint;
+        } catch (constErr) {
+          console.log('🔍 Tier Debug - Could not fetch tier constants');
+        }
       } catch (err) {
         console.error('Error fetching staked amount for tier debug:', err);
+        return tierNumber; // Return original tier if we can't fix it
       }
       
-      return tierNumber;
+      // FIX: The deployed contract has a bug in getTier function
+      // It returns 4 (Diamond) for 3000 METRIK when it should return 2 (Silver)
+      // Let's calculate the correct tier based on the staked amount and constants
+      
+      let correctTier = 0;
+      if (stakedForTier >= 10000n * 10n**18n) { // 10,000 METRIK
+        correctTier = 4; // Diamond
+      } else if (stakedForTier >= 5000n * 10n**18n) { // 5,000 METRIK
+        correctTier = 3; // Gold
+      } else if (stakedForTier >= 2500n * 10n**18n) { // 2,500 METRIK
+        correctTier = 2; // Silver
+      } else if (stakedForTier >= 1000n * 10n**18n) { // 1,000 METRIK
+        correctTier = 1; // Bronze
+      }
+      
+      return correctTier;
     } catch (err) {
       console.error('Error fetching tier:', err);
       // Return mock data for testing when contracts are not deployed

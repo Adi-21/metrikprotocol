@@ -10,19 +10,45 @@ export async function GET(request: Request) {
   const id = (address || email).replace(/^<|>$/g, '');
   if (!id) return NextResponse.json({ kycStatus: 'not_submitted' });
 
-  const { data, error } = await supabase
-    .from('kyc_records')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
+  try {
+    // Check regular KYC records first
+    const { data: regularData, error: regularError } = await supabase
+      .from('kyc_records')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
 
-  if (error) {
+    if (regularData && !regularError) {
+      const status = (regularData as any)?.kycstatus || (regularData as any)?.kycStatus || 'not_submitted';
+      return NextResponse.json({ 
+        kycStatus: status, 
+        record: regularData,
+        type: 'regular'
+      });
+    }
+
+    // If no regular KYC found, check ZK KYC records
+    const { data: zkData, error: zkError } = await supabase
+      .from('zk_kyc_records')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (zkData && !zkError) {
+      return NextResponse.json({ 
+        kycStatus: zkData.kyc_status || 'pending_review', 
+        record: zkData,
+        type: 'zk'
+      });
+    }
+
+    // No KYC found in either table
+    return NextResponse.json({ kycStatus: 'not_submitted' });
+
+  } catch (error) {
+    console.error('Error checking KYC status:', error);
     return NextResponse.json({ kycStatus: 'not_submitted' });
   }
-
-  // Map lowercase DB column to camelCase API field
-  const status = (data as any)?.kycstatus || (data as any)?.kycStatus || 'not_submitted';
-  return NextResponse.json({ kycStatus: status, record: data || null });
 }
 
 

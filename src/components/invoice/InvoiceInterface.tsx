@@ -165,14 +165,6 @@ export function InvoiceInterface() {
 
   return (
     <div className="space-y-6">
-      {/* Error Display */}
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            Error loading invoices: {error.message}
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -455,22 +447,11 @@ export function InvoiceInterface() {
                     <TableHead>Amount</TableHead>
                     <TableHead>Due Date</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Pay</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {invoices && invoices.filter(inv => inv.supplier === address).length > 0 ? (
                     invoices.filter(inv => inv.supplier === address).map((invoice) => {
-                      // Constants for EIP-681
-                      const USDC_ADDRESS = '0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // Mainnet USDC, replace as needed
-                      const CHAIN_ID = 1; // Mainnet, replace as needed
-                      const eip681 = generateEIP681URI({
-                        tokenAddress: USDC_ADDRESS,
-                        recipient: invoice.supplier,
-                        amount: invoice.creditAmount,
-                        decimals: 6,
-                        chainId: CHAIN_ID,
-                      });
                       return (
                         <TableRow key={invoice.id}>
                           <TableCell>{invoice.invoiceId}</TableCell>
@@ -478,17 +459,12 @@ export function InvoiceInterface() {
                           <TableCell>{(Number(invoice.creditAmount) / 1e6).toLocaleString(undefined, { maximumFractionDigits: 2 })} USDC</TableCell>
                           <TableCell>{invoice.dueDate ? new Date(Number(invoice.dueDate)).toLocaleDateString() : 'N/A'}</TableCell>
                           <TableCell>{getStatusBadge(invoice.isVerified)}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-col items-center gap-2">
-                              <Link href={eip681} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs">Pay with Wallet</Link>
-                            </div>
-                          </TableCell>
                         </TableRow>
                       );
                     })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-gray-500">
+                      <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                         No invoices found.
                       </TableCell>
                     </TableRow>

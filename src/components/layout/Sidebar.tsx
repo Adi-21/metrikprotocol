@@ -112,7 +112,7 @@ export default function Sidebar() {
             >
                 <div className="flex items-center justify-start p-2">
                     <button
-                        className="w-8 h-8 rounded-md hover:bg-[#f58a32] hover:text-white pl-2"
+                        className="w-8 h-8 rounded-md hover:bg-[#E84142] hover:text-white pl-2"
                         aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                         onClick={() => setIsOpen((v) => !v)}
                     >
@@ -157,7 +157,7 @@ function NavList({ items, expanded = true }: { items: NavItem[]; expanded?: bool
                                 </span>
                                 <span className="relative overflow-hidden shrink-0 w-[160px]">
                                     <span
-                                        className={clsx('block', isActive ? 'text-white hover:bg-[#f58a32]' : 'text-gray-700')}
+                                        className={clsx('block', isActive ? 'text-white hover:bg-[#E84142]' : 'text-gray-700')}
                                         style={{
                                             clipPath: expanded ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)',
                                             transition: 'clip-path 300ms ease-in-out',

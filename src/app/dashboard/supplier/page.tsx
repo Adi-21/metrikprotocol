@@ -19,20 +19,12 @@ import {
   CreditCard, 
   FileText, 
   Shield, 
-  Clock, 
   CheckCircle, 
   AlertTriangle,
-  ArrowUpRight,
-  ArrowDownRight,
   Activity,
-  BarChart3,
-  PieChart,
-  Calendar,
-  Target,
   Zap
 } from 'lucide-react';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
 import { useKyc } from '@/hooks/useKyc';
 
 export default function SupplierDashboard() {
@@ -45,7 +37,7 @@ export default function SupplierDashboard() {
   // Hooks for data
   const { stakedAmount, currentTier, metrikBalance } = useStaking(address as `0x${string}`);
   const { outstandingLoans, repaymentStats } = useRepay(address as `0x${string}`);
-  const { userInvoices, fetchInvoices, fetchAllUserInvoices } = useInvoiceNFT(address as `0x${string}`);
+  const { userInvoices, fetchUserInvoices } = useInvoiceNFT(address as `0x${string}`);
   const { userLoans, activeLoans, borrowStats } = useBorrow(address as `0x${string}`);
   
   // Token balances
@@ -59,7 +51,7 @@ export default function SupplierDashboard() {
       if (address) {
         try {
           await Promise.all([
-            fetchAllUserInvoices(address as `0x${string}`), // Use the new function to include burned invoices
+            fetchUserInvoices(address as `0x${string}`), // Use the regular function that works with deployed contract
             // The useStaking hook automatically fetches data on mount
           ]);
           // Simulate loading time for better UX
@@ -72,13 +64,14 @@ export default function SupplierDashboard() {
     };
 
     loadDashboardData();
-  }, [address, fetchAllUserInvoices]);
+  }, [address, fetchUserInvoices]);
 
   // Calculate dashboard stats
   const totalInvoices = userInvoices?.length || 0;
   const activeInvoices = userInvoices?.filter(inv => !inv.isBurned).length || 0;
   const burnedInvoices = userInvoices?.filter(inv => inv.isBurned).length || 0;
   const verifiedInvoices = userInvoices?.filter(inv => inv.isVerified).length || 0;
+
   const totalBorrowed = activeLoans?.reduce((sum, loan) => sum + Number(loan.amount), 0) || 0;
   const totalRepaid = borrowStats?.totalRepaid || 0;
   const stakingTier = currentTier || 0;
